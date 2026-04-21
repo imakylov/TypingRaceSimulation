@@ -1,19 +1,15 @@
 import java.util.concurrent.TimeUnit;
 
 /**
- * A typing race simulation. Three typists race to complete a passage of text,
- * advancing character by character — or sliding backwards when they mistype.
+ * A typing race simulation. A maximum of three typists race to complete a passage of text,
+ * advancing character by character, sliding backwards when they mistype or burning out if they push too hard.
  *
- * Originally written by Ty Posaurus, who left this project to "focus on his
- * two-finger technique". He assured us the code was "basically done".
- * We have found evidence to the contrary.
- *
- * @author TyPosaurus
- * @version 0.7 (the other 0.3 is left as an exercise for the reader)
+ * @author Adil Akylov
+ * @version 0.9
  */
 public class TypingRace
 {
-    final private int passageLength;   // Total characters in the passage to type
+    final private int passageLength;
     private int steps_since_start;
     private Typist seat1Typist;
     private Typist seat2Typist;
@@ -22,16 +18,16 @@ public class TypingRace
     private static final int STEP_DURATION_MS = 200;
     private static final double CHARACTERS_IN_WORD = 5;
 
-    // Accuracy thresholds for mistype and burnout events
-    // (Ty tuned these values "by feel". They may need adjustment.)
+    // Accuracy thresholds and penalties for mistype and burnout events
     private static final double MISTYPE_BASE_CHANCE = 0.3;
+    private static final double BURNOUT_CAP_CHANCE = 0.05;
     private static final int    SLIDE_BACK_AMOUNT   = 2;
     private static final int    BURNOUT_DURATION     = 3;
 
     /**
      * Constructor for objects of class TypingRace.
      * Sets up the race with a passage of the given length.
-     * Initially there are no typists seated.
+     * Initially there are no typists seated and the steps since start is 0
      *
      * @param passageLength the number of characters in the passage to type
      */
@@ -65,17 +61,12 @@ public class TypingRace
     /**
      * Starts the typing race.
      * All typists are reset to the beginning, then the simulation runs
-     * turn by turn until one typist completes the full passage.
-     *
-     * Note from Ty: "I didn't bother printing the winner at the end,
-     * you can probably figure that out yourself."
+     * turn by turn until at least one typist completes the full passage.
      */
     public void startRace() throws RulesException
     {
         boolean finished = false;
         boolean isRaceEmpty = true;
-        // Reset all typists to the start of the passage
-        // (Ty was in a hurry here)
         if(seat1Typist != null){
             seat1Typist.resetToStart();
             isRaceEmpty = false;
@@ -124,7 +115,7 @@ public class TypingRace
                 System.out.println(typist.getName() + " won!");
             }
         }
-        int ms_since_start = getMSSinceStart();
+        int ms_since_start = this.steps_since_start * STEP_DURATION_MS;
         long seconds = TimeUnit.MILLISECONDS.toSeconds(ms_since_start);
         long minutes = TimeUnit.SECONDS.toMinutes(seconds);
         seconds -= TimeUnit.MINUTES.toSeconds(minutes);
@@ -141,6 +132,8 @@ public class TypingRace
      *     for more accurate typists.
      *   - They may burn out — more likely for very high-accuracy typists
      *     who are pushing themselves too hard.
+     *
+     * state of the typist is symbolically stored in postfix and cleared if typist typed correctly.
      *
      * @param theTypist the typist to advance
      */
@@ -161,16 +154,16 @@ public class TypingRace
             theTypist.setPostfix("");
         }
 
-        // Mistype check — the probability should reflect the typist's accuracy
+        // Mistype check
         if (Math.random() < (1 - theTypist.getAccuracy()) * MISTYPE_BASE_CHANCE)
         {
             theTypist.slideBack(SLIDE_BACK_AMOUNT);
             theTypist.setPostfix("[<]");
         }
-        
+
         // Burnout check — pushing too hard increases burnout risk
         // (probability scales with accuracy squared, capped at ~0.05)
-        if (Math.random() < 0.05 * theTypist.getAccuracy() * theTypist.getAccuracy())
+        if (Math.random() < BURNOUT_CAP_CHANCE * theTypist.getAccuracy() * theTypist.getAccuracy())
         {
             theTypist.burnOut(BURNOUT_DURATION);
             theTypist.setPostfix("~");
@@ -185,7 +178,7 @@ public class TypingRace
      */
     private boolean raceFinishedBy(Typist theTypist)
     {
-        return theTypist.getProgress() >= passageLength;
+        return theTypist != null && theTypist.getProgress() >= passageLength;
     }
 
     /**
@@ -215,10 +208,7 @@ public class TypingRace
      *
      * Examples:
      *   |          ⌨           | TURBOFINGERS (Accuracy: 0.85)
-     *   |    [zz]              | HUNT_N_PECK  (Accuracy: 0.40) BURNT OUT (2 turns)
-     *
-     * Note: Ty forgot to show when a typist has just mistyped. That would
-     * be a nice improvement — perhaps a [<] marker after their symbol.
+     *   |    A~                 | HUNT_N_PECK  (Accuracy: 0.40) BURNT OUT (2 turns)
      *
      * @param theTypist the typist whose lane to print
      */
@@ -231,8 +221,6 @@ public class TypingRace
         System.out.print('|');
         multiplePrint(' ', spacesBefore);
 
-        // Always show the typist's symbol so they can be identified on screen.
-        // Append ~ when burnt out so the state is visible without hiding identity.
         System.out.print(theTypist.getSymbol());
         spacesAfter -= theTypist.getPostfix().length();
         System.out.print(theTypist.getPostfix());
@@ -243,7 +231,7 @@ public class TypingRace
         double wpm = 0;
         if(this.steps_since_start != 0){
             double wordsProgress = theTypist.getProgress() / CHARACTERS_IN_WORD;
-            double minutesPassed = getMSSinceStart() / 1000.0 / 60.0;
+            double minutesPassed = this.steps_since_start * STEP_DURATION_MS / 1000.0 / 60.0;
             wpm = wordsProgress / minutesPassed;
         }
 
@@ -269,9 +257,5 @@ public class TypingRace
             System.out.print(aChar);
             i = i + 1;
         }
-    }
-    private int getMSSinceStart()
-    {
-        return this.steps_since_start*STEP_DURATION_MS;
     }
 }

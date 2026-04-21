@@ -1,32 +1,21 @@
 /**
- * Write a description of class Typist here.
+ * A class for creating typists for races.
+ * Holds all the relevant information to the typist and is responsible for keeping all fields proper through public methods.
  *
- * Starter code generously abandoned by Ty Posaurus, your predecessor,
- * who typed with two fingers and considered that "good enough".
- * He left a sticky note: "the slide-back thing is optional probably".
- * It is not optional. Good luck.
- *
- * @author (your name)
- * @version (a version number or a date)
+ * @author Adil Akylov
+ * @version 0.9
  */
 public class Typist
 {
-    // Fields of class Typist
-    // Hint: you will need six fields. Think carefully about their types.
-    // One of them tracks how far along the passage the typist has reached.
-    // Another tracks whether the typist is currently burnt out.
-    // A third tracks HOW MANY turns of burnout remain (not just whether they are burnt out).
-    // The remaining three should be fairly obvious.
-
     private char typistSymbol;
-    private String specialPostfix;
     final String typistName;
+    private String specialPostfix;
+
     private double typistAccuracy;
     private int raceProgress;
     private boolean isBurntOut;
     private int burnOutTurnsLeft;
 
-    // Constructor of class Typist
     /**
      * Constructor for objects of class Typist.
      * Creates a new typist with a given symbol, name, and accuracy rating.
@@ -39,18 +28,19 @@ public class Typist
     {
         this.typistSymbol = typistSymbol;
         this.typistName = typistName;
-        this.typistAccuracy = typistAccuracy;
         this.specialPostfix = "";
+        this.typistAccuracy = typistAccuracy;
+        this.raceProgress = 0;
+        this.isBurntOut = false;
+        this.burnOutTurnsLeft = 0;
     }
 
-
-    // Methods of class Typist
 
     /**
      * Sets this typist into a burnout state for a given number of turns.
      * A burnt-out typist cannot type until their burnout has worn off.
      *
-     * @param turns the number of turns the burnout will last
+     * @param turns the number of turns the burnout will last, must be positive
      */
     public void burnOut(int turns) throws RulesException
     {
@@ -136,6 +126,7 @@ public class Typist
         this.raceProgress = 0;
         this.isBurntOut = false;
         this.burnOutTurnsLeft = 0;
+        this.specialPostfix = "";
     }
 
     /**
@@ -167,7 +158,8 @@ public class Typist
     public void slideBack(int amount) throws RulesException
     {
         if(amount <= 0) throw new RulesException("slideBack amount is not positive");
-        this.raceProgress = (int)Math.max(this.raceProgress - amount, 0);
+        this.raceProgress -= amount;
+        if(this.raceProgress < 0) this.raceProgress = 0;
     }
 
     /**
@@ -191,11 +183,21 @@ public class Typist
         this.typistSymbol = newSymbol;
     }
 
-    public void setPostfix(String postfix)
+    /**
+     * Sets the specialPostfix used to show state of the typist.
+     *
+     * @param newPostfix the new postfix string
+     */
+    public void setPostfix(String newPostfix)
     {
-        this.specialPostfix = postfix;
+        this.specialPostfix = newPostfix;
     }
 
+    /**
+     * Returns the string used to represent this typist's state.
+     *
+     * @return the typist's state representation as a string
+     */
     public String getPostfix(){
         return this.specialPostfix;
     }

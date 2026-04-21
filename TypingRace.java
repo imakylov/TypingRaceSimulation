@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class TypingRace
 {
-    private int passageLength;   // Total characters in the passage to type
+    final private int passageLength;   // Total characters in the passage to type
     private Typist seat1Typist;
     private Typist seat2Typist;
     private Typist seat3Typist;
@@ -47,21 +47,13 @@ public class TypingRace
      */
     public void addTypist(Typist theTypist, int seatNumber)
     {
-        if (seatNumber == 1)
-        {
-            seat1Typist = theTypist;
-        }
-        else if (seatNumber == 2)
-        {
-            seat2Typist = theTypist;
-        }
-        else if (seatNumber == 3)
-        {
-            seat3Typist = theTypist;
-        }
-        else
-        {
-            System.out.println("Cannot seat typist at seat " + seatNumber + " — there is no such seat.");
+        switch (seatNumber) {
+            case 1 -> seat1Typist = theTypist;
+            case 2 -> seat2Typist = theTypist;
+            case 3 -> seat3Typist = theTypist;
+            default -> {
+                System.out.println("Cannot seat typist at seat " + seatNumber + " — there is no such seat.");
+            }
         }
     }
 
@@ -115,7 +107,9 @@ public class TypingRace
             // Wait 200ms between turns so the animation is visible
             try {
                 TimeUnit.MILLISECONDS.sleep(200);
-            } catch (InterruptedException e) {}
+            } catch (InterruptedException e) {
+                System.out.println("Race interrupted!");
+            }
         }
         Typist[] typists = {seat1Typist, seat2Typist, seat3Typist};
         for(Typist typist : typists){

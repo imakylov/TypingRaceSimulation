@@ -3,7 +3,7 @@
  * Logging and displaying it to the user is handled at the highest method of the stack.
  *
  * @author Adil Akylov
- * @version 0.9
+ * @version 1.0
  */
 public class RulesException extends Exception{
     public String message;

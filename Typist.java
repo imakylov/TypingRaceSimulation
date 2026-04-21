@@ -3,7 +3,7 @@
  * Holds all the relevant information to the typist and is responsible for keeping all fields proper through public methods.
  *
  * @author Adil Akylov
- * @version 0.9
+ * @version 1.0
  */
 public class Typist
 {

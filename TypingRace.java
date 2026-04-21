@@ -5,7 +5,7 @@ import java.util.concurrent.TimeUnit;
  * advancing character by character, sliding backwards when they mistype or burning out if they push too hard.
  *
  * @author Adil Akylov
- * @version 0.9
+ * @version 1.0
  */
 public class TypingRace
 {
@@ -186,7 +186,7 @@ public class TypingRace
      * Shows each typist's position along the passage, burnout state,
      * and a WPM estimate based on current progress.
      */
-    private void printRace()
+    public void printRace()
     {
         System.out.print('\u000C'); // Clear terminal
 
@@ -200,7 +200,7 @@ public class TypingRace
 
         multiplePrint('=', passageLength + 3);
         System.out.println();
-        System.out.println("  [zz] = burnt out    [<] = just mistyped");
+        System.out.println("  ~ = burnt out    [<] = just mistyped");
     }
 
     /**

@@ -61,9 +61,9 @@ public class TypingRace
         }
         else
         {
-                System.out.println("Cannot seat typist at seat " + seatNumber + " — there is no such seat.");
-            }
+            System.out.println("Cannot seat typist at seat " + seatNumber + " — there is no such seat.");
         }
+    }
 
     /**
      * Starts the typing race.
@@ -117,8 +117,12 @@ public class TypingRace
                 TimeUnit.MILLISECONDS.sleep(200);
             } catch (InterruptedException e) {}
         }
-
-        // TODO (Task 2a): Print the winner's name here
+        Typist[] typists = {seat1Typist, seat2Typist, seat3Typist};
+        for(Typist typist : typists){
+            if(raceFinishedBy(typist)){
+                System.out.println(typist.getName() + " won!");
+            }
+        }
     }
 
     /**

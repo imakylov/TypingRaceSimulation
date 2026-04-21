@@ -4,17 +4,22 @@ public class TypistTests {
     final static Random rand = new Random();
     public static void main(String[] args)
     {
-        printSeparator();
-        if(!testSlideBack())failed();
-        printSeparator();
-        if(!testRecoverFromBurnout())failed();
-        printSeparator();
-        if(!testResetToStart())failed();
-        printSeparator();
-        if(!testSetAccuracy())failed();
-        printSeparator();
-        if(!testTypeCharacter())failed();
-        printSeparator();
+        try {
+            printSeparator();
+            if(!testSlideBack())failed();
+            printSeparator();
+            if(!testRecoverFromBurnout())failed();
+            printSeparator();
+            if(!testResetToStart())failed();
+            printSeparator();
+            if(!testSetAccuracy())failed();
+            printSeparator();
+            if(!testTypeCharacter())failed();
+            printSeparator();
+        } catch (RulesException e) {
+            System.out.println("Rules Exception!");
+            System.out.println(e.message);
+        }
     }
     private static void failed()
     {
@@ -33,14 +38,14 @@ public class TypistTests {
         return new Typist('1', "TestName", 1);
     }
 
-    static void advanceTypist(Typist t, int characters)
+    static void advanceTypist(Typist t, int characters) throws RulesException
     {
         for(int curProgress=0;curProgress<characters;curProgress++){
             t.typeCharacter();
         }
     }
 
-    static boolean testSlideBack()
+    static boolean testSlideBack() throws RulesException
     {
         printTestTitle("Testing slideBack not making progress negative");
         Typist t = getTypist();
@@ -60,7 +65,7 @@ public class TypistTests {
         System.out.println("Resulting progress: " + t.getProgress());
         return t.getProgress() == 0;
     }
-    static boolean testRecoverFromBurnout()
+    static boolean testRecoverFromBurnout() throws RulesException
     {
         printTestTitle("Testing recoverFromBurnout correctly clearing burnout");
         Typist t = getTypist();
@@ -75,7 +80,7 @@ public class TypistTests {
             System.out.println("Player is" + (t.isBurntOut() ? "" : " not") +  " in burnout with " + t.getBurnoutTurnsRemaining() + " turns left");
         }return !t.isBurntOut() && t.getBurnoutTurnsRemaining() == 0;
     }
-    static boolean testResetToStart()
+    static boolean testResetToStart() throws RulesException
     {
         printTestTitle("Testing resetToStart correctly clearing progress and burnout");
         Typist t = getTypist();
@@ -107,7 +112,7 @@ public class TypistTests {
         }System.out.println("Current accuracy is " + t.getAccuracy());
         return accuracy == t.getAccuracy();
     }
-    static boolean testTypeCharacter()
+    static boolean testTypeCharacter() throws RulesException
     {
         printTestTitle("Testing typeCharacter correctly advances progress");
         Typist t = getTypist();

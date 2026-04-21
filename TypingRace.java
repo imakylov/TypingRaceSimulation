@@ -1,5 +1,4 @@
 import java.util.concurrent.TimeUnit;
-import java.lang.Math;
 
 /**
  * A typing race simulation. Three typists race to complete a passage of text,
@@ -74,7 +73,7 @@ public class TypingRace
      * Note from Ty: "I didn't bother printing the winner at the end,
      * you can probably figure that out yourself."
      */
-    public void startRace()
+    public void startRace() throws RulesException
     {
         boolean finished = false;
 
@@ -121,7 +120,7 @@ public class TypingRace
      *
      * @param theTypist the typist to advance
      */
-    private void advanceTypist(Typist theTypist)
+    private void advanceTypist(Typist theTypist) throws RulesException
     {
         if (theTypist.isBurntOut())
         {

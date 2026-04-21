@@ -50,8 +50,9 @@ public class Typist
      *
      * @param turns the number of turns the burnout will last
      */
-    public void burnOut(int turns)
+    public void burnOut(int turns) throws RulesException
     {
+        if(turns <= 0) throw new RulesException("burnOut for negative or zero turns");
         this.isBurntOut = true;
         this.burnOutTurnsLeft = turns;
     }
@@ -149,8 +150,9 @@ public class Typist
      * Advances the typist forward by one character along the passage.
      * Should only be called when the typist is not burnt out.
      */
-    public void typeCharacter()
+    public void typeCharacter() throws RulesException
     {
+        if(this.isBurntOut)throw new RulesException("trying to type character while burned out");
         this.raceProgress++;
     }
 
@@ -160,8 +162,9 @@ public class Typist
      *
      * @param amount the number of characters to slide back (must be positive)
      */
-    public void slideBack(int amount)
+    public void slideBack(int amount) throws RulesException
     {
+        if(amount <= 0) throw new RulesException("slideBack amount is not positive");
         this.raceProgress = (int)Math.max(this.raceProgress - amount, 0);
     }
 

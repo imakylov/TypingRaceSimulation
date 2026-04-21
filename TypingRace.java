@@ -14,9 +14,13 @@ import java.util.concurrent.TimeUnit;
 public class TypingRace
 {
     final private int passageLength;   // Total characters in the passage to type
+    private int steps_since_start;
     private Typist seat1Typist;
     private Typist seat2Typist;
     private Typist seat3Typist;
+
+    private static final int STEP_DURATION_MS = 200;
+    private static final double CHARACTERS_IN_WORD = 5;
 
     // Accuracy thresholds for mistype and burnout events
     // (Ty tuned these values "by feel". They may need adjustment.)
@@ -34,9 +38,10 @@ public class TypingRace
     public TypingRace(int passageLength)
     {
         this.passageLength = passageLength;
-        seat1Typist = null;
-        seat2Typist = null;
-        seat3Typist = null;
+        this.seat1Typist = null;
+        this.seat2Typist = null;
+        this.seat3Typist = null;
+        this.steps_since_start = 0;
     }
 
     /**
@@ -87,6 +92,7 @@ public class TypingRace
         if(isRaceEmpty){
             throw new RulesException("Race is empty");
         }
+        this.steps_since_start = 0;
 
         while (!finished)
         {
@@ -106,7 +112,8 @@ public class TypingRace
 
             // Wait 200ms between turns so the animation is visible
             try {
-                TimeUnit.MILLISECONDS.sleep(200);
+                this.steps_since_start++;
+                TimeUnit.MILLISECONDS.sleep(STEP_DURATION_MS);
             } catch (InterruptedException e) {
                 System.out.println("Race interrupted!");
             }
@@ -117,6 +124,11 @@ public class TypingRace
                 System.out.println(typist.getName() + " won!");
             }
         }
+        int ms_since_start = getMSSinceStart();
+        long seconds = TimeUnit.MILLISECONDS.toSeconds(ms_since_start);
+        long minutes = TimeUnit.SECONDS.toMinutes(seconds);
+        seconds -= TimeUnit.MINUTES.toSeconds(minutes);
+        System.out.println("The race went on for " + minutes + " minutes and " + seconds + " seconds.");
     }
 
     /**
@@ -229,8 +241,15 @@ public class TypingRace
         System.out.print('|');
         System.out.print(' ');
 
+        double wpm = 0;
+        if(this.steps_since_start != 0){
+            double wordsProgress = theTypist.getProgress() / CHARACTERS_IN_WORD;
+            double minutesPassed = getMSSinceStart() / 1000.0 / 60.0;
+            wpm = wordsProgress / minutesPassed;
+        }
+
         // Print name and accuracy
-        System.out.print(theTypist.getName() + " (Accuracy: " + theTypist.getAccuracy() + ")");
+        System.out.print(theTypist.getName() + " | " + (int) wpm + " WPM (Accuracy: " + theTypist.getAccuracy() + ")");
         if (theTypist.isBurntOut()){
             System.out.print(" BURNT OUT (" + theTypist.getBurnoutTurnsRemaining() + " turns)");
         }System.out.println();
@@ -250,5 +269,9 @@ public class TypingRace
             System.out.print(aChar);
             i = i + 1;
         }
+    }
+    private int getMSSinceStart()
+    {
+        return this.steps_since_start*STEP_DURATION_MS;
     }
 }

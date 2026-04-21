@@ -68,20 +68,20 @@ public class TypingRace
     public void startRace() throws RulesException
     {
         boolean finished = false;
-        boolean isRaceEmpty = false;
+        boolean isRaceEmpty = true;
         // Reset all typists to the start of the passage
         // (Ty was in a hurry here)
         if(seat1Typist != null){
             seat1Typist.resetToStart();
-            isRaceEmpty = true;
+            isRaceEmpty = false;
         }
         if(seat2Typist != null){
             seat2Typist.resetToStart();
-            isRaceEmpty = true;
+            isRaceEmpty = false;
         }
         if(seat3Typist != null){
             seat3Typist.resetToStart();
-            isRaceEmpty = true;
+            isRaceEmpty = false;
         }
 
         if(isRaceEmpty){

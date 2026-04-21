@@ -61,9 +61,9 @@ public class TypingRace
         }
         else
         {
-            System.out.println("Cannot seat typist at seat " + seatNumber + " — there is no such seat.");
+                System.out.println("Cannot seat typist at seat " + seatNumber + " — there is no such seat.");
+            }
         }
-    }
 
     /**
      * Starts the typing race.
@@ -76,12 +76,25 @@ public class TypingRace
     public void startRace() throws RulesException
     {
         boolean finished = false;
-
+        boolean isRaceEmpty = false;
         // Reset all typists to the start of the passage
         // (Ty was in a hurry here)
-        seat1Typist.resetToStart();
-        seat2Typist.resetToStart();
-        seat3Typist.resetToStart();
+        if(seat1Typist != null){
+            seat1Typist.resetToStart();
+            isRaceEmpty = true;
+        }
+        if(seat2Typist != null){
+            seat2Typist.resetToStart();
+            isRaceEmpty = true;
+        }
+        if(seat3Typist != null){
+            seat3Typist.resetToStart();
+            isRaceEmpty = true;
+        }
+
+        if(isRaceEmpty){
+            throw new RulesException("Race is empty");
+        }
 
         while (!finished)
         {
@@ -102,7 +115,7 @@ public class TypingRace
             // Wait 200ms between turns so the animation is visible
             try {
                 TimeUnit.MILLISECONDS.sleep(200);
-            } catch (Exception e) {}
+            } catch (InterruptedException e) {}
         }
 
         // TODO (Task 2a): Print the winner's name here
@@ -123,6 +136,7 @@ public class TypingRace
      */
     private void advanceTypist(Typist theTypist) throws RulesException
     {
+        if(theTypist == null)return;
         if (theTypist.isBurntOut())
         {
             // Recovering from burnout — skip this turn
@@ -175,13 +189,8 @@ public class TypingRace
         System.out.println();
 
         printSeat(seat1Typist);
-        System.out.println();
-
         printSeat(seat2Typist);
-        System.out.println();
-
         printSeat(seat3Typist);
-        System.out.println();
 
         multiplePrint('=', passageLength + 3);
         System.out.println();
@@ -202,6 +211,7 @@ public class TypingRace
      */
     private void printSeat(Typist theTypist)
     {
+        if(theTypist == null)return;
         int spacesBefore = theTypist.getProgress();
         int spacesAfter  = passageLength - theTypist.getProgress();
 
@@ -222,17 +232,10 @@ public class TypingRace
         System.out.print(' ');
 
         // Print name and accuracy
-        if (theTypist.isBurntOut())
-        {
-            System.out.print(theTypist.getName()
-                + " (Accuracy: " + theTypist.getAccuracy() + ")"
-                + " BURNT OUT (" + theTypist.getBurnoutTurnsRemaining() + " turns)");
-        }
-        else
-        {
-            System.out.print(theTypist.getName()
-                + " (Accuracy: " + theTypist.getAccuracy() + ")");
-        }
+        System.out.print(theTypist.getName() + " (Accuracy: " + theTypist.getAccuracy() + ")");
+        if (theTypist.isBurntOut()){
+            System.out.print(" BURNT OUT (" + theTypist.getBurnoutTurnsRemaining() + " turns)");
+        }System.out.println();
     }
 
     /**

@@ -19,6 +19,7 @@ public class Typist
     // The remaining three should be fairly obvious.
 
     private char typistSymbol;
+    private String specialPostfix;
     final String typistName;
     private double typistAccuracy;
     private int raceProgress;
@@ -39,6 +40,7 @@ public class Typist
         this.typistSymbol = typistSymbol;
         this.typistName = typistName;
         this.typistAccuracy = typistAccuracy;
+        this.specialPostfix = "";
     }
 
 
@@ -187,6 +189,15 @@ public class Typist
     public void setSymbol(char newSymbol)
     {
         this.typistSymbol = newSymbol;
+    }
+
+    public void setPostfix(String postfix)
+    {
+        this.specialPostfix = postfix;
+    }
+
+    public String getPostfix(){
+        return this.specialPostfix;
     }
 
 }

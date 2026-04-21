@@ -158,19 +158,22 @@ public class TypingRace
         if (Math.random() < theTypist.getAccuracy())
         {
             theTypist.typeCharacter();
+            theTypist.setPostfix("");
         }
 
         // Mistype check — the probability should reflect the typist's accuracy
         if (Math.random() < (1 - theTypist.getAccuracy()) * MISTYPE_BASE_CHANCE)
         {
             theTypist.slideBack(SLIDE_BACK_AMOUNT);
+            theTypist.setPostfix("[<]");
         }
-
+        
         // Burnout check — pushing too hard increases burnout risk
         // (probability scales with accuracy squared, capped at ~0.05)
         if (Math.random() < 0.05 * theTypist.getAccuracy() * theTypist.getAccuracy())
         {
             theTypist.burnOut(BURNOUT_DURATION);
+            theTypist.setPostfix("~");
         }
     }
 
@@ -231,15 +234,11 @@ public class TypingRace
         // Always show the typist's symbol so they can be identified on screen.
         // Append ~ when burnt out so the state is visible without hiding identity.
         System.out.print(theTypist.getSymbol());
-        if (theTypist.isBurntOut())
-        {
-            System.out.print('~');
-            spacesAfter--; // symbol + ~ together take two characters
-        }
+        spacesAfter -= theTypist.getPostfix().length();
+        System.out.print(theTypist.getPostfix());
 
         multiplePrint(' ', spacesAfter);
-        System.out.print('|');
-        System.out.print(' ');
+        System.out.print("| ");
 
         double wpm = 0;
         if(this.steps_since_start != 0){
@@ -248,8 +247,9 @@ public class TypingRace
             wpm = wordsProgress / minutesPassed;
         }
 
-        // Print name and accuracy
-        System.out.print(theTypist.getName() + " | " + (int) wpm + " WPM (Accuracy: " + theTypist.getAccuracy() + ")");
+        // Print name, wpm and accuracy
+        System.out.print(theTypist.getName() + " | " + (int) wpm + " WPM");
+        System.out.print(" (Accuracy: " + theTypist.getAccuracy() + ")");
         if (theTypist.isBurntOut()){
             System.out.print(" BURNT OUT (" + theTypist.getBurnoutTurnsRemaining() + " turns)");
         }System.out.println();

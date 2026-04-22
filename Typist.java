@@ -39,6 +39,7 @@ public class Typist
     /**
      * Sets this typist into a burnout state for a given number of turns.
      * A burnt-out typist cannot type until their burnout has worn off.
+     * Also adjusts typist's accuracy down 10 percent
      *
      * @param turns the number of turns the burnout will last, must be positive
      */
@@ -47,6 +48,16 @@ public class Typist
         if(turns <= 0) throw new RulesException("burnOut for negative or zero turns");
         this.isBurntOut = true;
         this.burnOutTurnsLeft = turns;
+        this.setAccuracy(.90*this.typistAccuracy);
+    }
+
+    /**
+     * Adjust the accuracy after winning the race.
+     * The exact formula is new = .8*old + .2
+     */
+    public void winRace()
+    {
+        this.setAccuracy(.8*this.typistAccuracy+.2);
     }
 
     /**
@@ -147,6 +158,7 @@ public class Typist
     {
         if(this.isBurntOut)throw new RulesException("trying to type character while burned out");
         this.raceProgress++;
+        this.setAccuracy(.99*this.typistAccuracy+.01);
     }
 
     /**

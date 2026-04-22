@@ -113,6 +113,7 @@ public class TypingRace
         for(Typist typist : typists){
             if(raceFinishedBy(typist)){
                 System.out.println(typist.getName() + " won!");
+                typist.winRace();
             }
         }
         int ms_since_start = this.steps_since_start * STEP_DURATION_MS;
@@ -237,7 +238,7 @@ public class TypingRace
 
         // Print name, wpm and accuracy
         System.out.print(theTypist.getName() + " | " + (int) wpm + " WPM");
-        System.out.print(" (Accuracy: " + theTypist.getAccuracy() + ")");
+        System.out.print(" (Accuracy: " + String.format("%.2f", theTypist.getAccuracy()) + ")");
         if (theTypist.isBurntOut()){
             System.out.print(" BURNT OUT (" + theTypist.getBurnoutTurnsRemaining() + " turns)");
         }System.out.println();

@@ -113,14 +113,21 @@ public class TypingRace
         for(Typist typist : typists){
             if(raceFinishedBy(typist)){
                 System.out.println(typist.getName() + " won!");
+                String oldAcc = String.format("%.3f", typist.getAccuracy());
                 typist.winRace();
+                String newAcc = String.format("%.3f", typist.getAccuracy());
+                System.out.println("Accuracy improved from " + oldAcc + " to " + newAcc);
             }
         }
         int ms_since_start = this.steps_since_start * STEP_DURATION_MS;
         long seconds = TimeUnit.MILLISECONDS.toSeconds(ms_since_start);
         long minutes = TimeUnit.SECONDS.toMinutes(seconds);
         seconds -= TimeUnit.MINUTES.toSeconds(minutes);
-        System.out.println("The race went on for " + minutes + " minutes and " + seconds + " seconds.");
+        System.out.print("The race went on for ");
+        if(minutes != 0){
+            System.out.print(minutes + " minutes and ");
+        }
+        System.out.println(seconds + " seconds.");
     }
 
     /**

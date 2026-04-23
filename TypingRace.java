@@ -17,6 +17,7 @@ public class TypingRace
 
     private static final int STEP_DURATION_MS = 200;
     private static final double CHARACTERS_IN_WORD = 5;
+    private static final int MINS_TO_FINISH_RACE = 2;
 
     // Accuracy thresholds and penalties for mistype and burnout events
     private static final double MISTYPE_BASE_CHANCE = 0.3;
@@ -101,12 +102,16 @@ public class TypingRace
                 finished = true;
             }
 
+            this.steps_since_start++;
+            if(TimeUnit.MILLISECONDS.toMinutes(this.steps_since_start * STEP_DURATION_MS) >= MINS_TO_FINISH_RACE){
+                System.out.println("Race finished by timeout!");
+                break;
+            }
             // Wait 200ms between turns so the animation is visible
             try {
-                this.steps_since_start++;
                 TimeUnit.MILLISECONDS.sleep(STEP_DURATION_MS);
             } catch (InterruptedException e) {
-                System.out.println("Race interrupted!");
+                throw new RulesException("Race interrupted!");
             }
         }
         Typist[] typists = {seat1Typist, seat2Typist, seat3Typist};
@@ -154,12 +159,12 @@ public class TypingRace
             theTypist.recoverFromBurnout();
             return;
         }
-
+        
+        theTypist.setPostfix("");
         // Attempt to type a character
         if (Math.random() < theTypist.getAccuracy())
         {
             theTypist.typeCharacter();
-            theTypist.setPostfix("");
         }
 
         // Mistype check

@@ -17,8 +17,9 @@ public class Main {
     public static void main(String[] args) {
         TypingRace race = new TypingRace(askInt("What is the passage length?"));
         showCommands();
-        String command = ask("What would you like to do?");
+        String command = "";
         while(!command.equals("e")){
+            command = ask("What would you like to do?");
             switch(command) {
                 case "h" -> {
                     showCommands();
@@ -36,16 +37,29 @@ public class Main {
                 }
                 case "q" -> {
                     race = new TypingRace(40);
-                    race.addTypist(new Typist('①', "TURBOFINGERS", 0.85), 1);
-                    race.addTypist(new Typist('②', "QWERTY_QUEEN",  0.60), 2);
-                    race.addTypist(new Typist('③', "HUNT_N_PECK",   0.30), 3);
+                    try{
+                        race.addTypist(new Typist('①', "TURBOFINGERS", 0.85));
+                        race.addTypist(new Typist('②', "QWERTY_QUEEN",  0.60));
+                        race.addTypist(new Typist('③', "HUNT_N_PECK",   0.30));
+                    }catch (RulesException e){
+                        System.out.println("Rules Exception!!");
+                        System.out.println(e.message);
+                    }
                 }
                 case "a" -> {
-                    int seatNumber = askInt("What seat should the typist occupy? (1-3)");
+                    if(race.getSeatsTaken() == TypingRace.MAX_TYPISTS){
+                        System.out.println("All seats taken");
+                        continue;
+                    }
                     String typistName = ask("What should the typist be named?");
                     double accuracy = askDouble("How accurate are they? (0.0-1.0)");
-                    Typist t = new Typist((char)('①'+seatNumber-1), typistName, accuracy);
-                    race.addTypist(t, seatNumber);
+                    Typist t = new Typist((char)('①'+race.getSeatsTaken()), typistName, accuracy);
+                    try {
+                        race.addTypist(t);
+                    }catch (RulesException e) {
+                        System.out.println("Rules Exception!!");
+                        System.out.println(e.message);
+                    }
                 }
                 case "c" -> {
                     race = new TypingRace(askInt("What is the passage length?"));
@@ -53,7 +67,7 @@ public class Main {
                 default -> {
                     System.out.println("Command unrecognized");
                 }
-            }command = ask("What would you like to do?");
+            }
         }System.out.println("Closing the program");
     }
     private static void showCommands(){

@@ -9,15 +9,15 @@ import java.util.concurrent.TimeUnit;
  */
 public class TypingRace
 {
-    final private int passageLength;
+    private final int passageLength;
     private int steps_since_start;
-    private Typist seat1Typist;
-    private Typist seat2Typist;
-    private Typist seat3Typist;
-
+    private final Typist[] typists;
+    private int seatsTaken;
+    
+    public static final int MAX_TYPISTS = 6;
     private static final int STEP_DURATION_MS = 200;
-    private static final double CHARACTERS_IN_WORD = 5;
     private static final int MINS_TO_FINISH_RACE = 2;
+    private static final double CHARACTERS_IN_WORD = 5;
 
     // Accuracy thresholds and penalties for mistype and burnout events
     private static final double MISTYPE_BASE_CHANCE = 0.3;
@@ -35,28 +35,39 @@ public class TypingRace
     public TypingRace(int passageLength)
     {
         this.passageLength = passageLength;
-        this.seat1Typist = null;
-        this.seat2Typist = null;
-        this.seat3Typist = null;
+        this.typists = new Typist[MAX_TYPISTS];
+        this.seatsTaken = 0;
         this.steps_since_start = 0;
     }
 
     /**
-     * Seats a typist at the given seat number (1, 2, or 3).
+     * @return how many typist seats are taken
+     */
+    public int getSeatsTaken(){
+        return this.seatsTaken;
+    }
+
+    /**
+     * @return an array of typists
+     */
+    public Typist[] getTypists(){
+        Typist[] trimmed = new Typist[this.seatsTaken];
+        System.arraycopy(this.typists, 0, trimmed, 0, this.seatsTaken);
+        return trimmed;
+    }
+
+    /**
+     * Seats a typist.
      *
      * @param theTypist  the typist to seat
-     * @param seatNumber the seat to place them in (1–3)
+     * @throws RulesException throws exception if trying to add past typist limit
      */
-    public void addTypist(Typist theTypist, int seatNumber)
+    public void addTypist(Typist theTypist) throws RulesException
     {
-        switch (seatNumber) {
-            case 1 -> seat1Typist = theTypist;
-            case 2 -> seat2Typist = theTypist;
-            case 3 -> seat3Typist = theTypist;
-            default -> {
-                System.out.println("Cannot seat typist at seat " + seatNumber + " — there is no such seat.");
-            }
+        if(this.seatsTaken >= MAX_TYPISTS){
+            throw new RulesException("trying to add typists past limit");
         }
+        this.typists[this.seatsTaken++] = theTypist;
     }
 
     /**
@@ -67,39 +78,26 @@ public class TypingRace
     public void startRace() throws RulesException
     {
         boolean finished = false;
-        boolean isRaceEmpty = true;
-        if(seat1Typist != null){
-            seat1Typist.resetToStart();
-            isRaceEmpty = false;
-        }
-        if(seat2Typist != null){
-            seat2Typist.resetToStart();
-            isRaceEmpty = false;
-        }
-        if(seat3Typist != null){
-            seat3Typist.resetToStart();
-            isRaceEmpty = false;
-        }
-
-        if(isRaceEmpty){
+        if(this.seatsTaken == 0){
             throw new RulesException("Race is empty");
         }
-        this.steps_since_start = 0;
 
+        this.steps_since_start = 0;
         while (!finished)
         {
             // Advance each typist by one turn
-            advanceTypist(seat1Typist);
-            advanceTypist(seat2Typist);
-            advanceTypist(seat3Typist);
+            for (Typist typist : this.typists) {
+                this.advanceTypist(typist);
+            }
 
             // Print the current state of the race
             printRace();
 
             // Check if any typist has finished the passage
-            if ( raceFinishedBy(seat1Typist) || raceFinishedBy(seat2Typist) || raceFinishedBy(seat3Typist) )
-            {
-                finished = true;
+            for(Typist typist : this.typists){
+                if(raceFinishedBy(typist)){
+                    finished = true;
+                }
             }
 
             this.steps_since_start++;
@@ -114,8 +112,7 @@ public class TypingRace
                 throw new RulesException("Race interrupted!");
             }
         }
-        Typist[] typists = {seat1Typist, seat2Typist, seat3Typist};
-        for(Typist typist : typists){
+        for(Typist typist : this.typists){
             if(raceFinishedBy(typist)){
                 System.out.println(typist.getName() + " won!");
                 String oldAcc = String.format("%.3f", typist.getAccuracy());
@@ -207,9 +204,9 @@ public class TypingRace
         multiplePrint('=', passageLength + 3);
         System.out.println();
 
-        printSeat(seat1Typist);
-        printSeat(seat2Typist);
-        printSeat(seat3Typist);
+        for(Typist typist : this.typists){
+            printSeat(typist);
+        }
 
         multiplePrint('=', passageLength + 3);
         System.out.println();

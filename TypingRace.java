@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class TypingRace
 {
-    private final int passageLength;
+    private int passageLength;
     private int steps_since_start;
     private final Typist[] typists;
     private int seatsTaken;
@@ -32,8 +32,7 @@ public class TypingRace
      *
      * @param passageLength the number of characters in the passage to type
      */
-    public TypingRace(int passageLength)
-    {
+    public TypingRace(int passageLength){
         this.passageLength = passageLength;
         this.typists = new Typist[MAX_TYPISTS];
         this.seatsTaken = 0;
@@ -45,6 +44,14 @@ public class TypingRace
      */
     public int getSeatsTaken(){
         return this.seatsTaken;
+    }
+
+    /**
+     * Sets this race's passage length
+     * @param length the length to be set
+     */
+    public void setPassageLength(int length){
+        this.passageLength = length;
     }
 
     /**
@@ -62,12 +69,17 @@ public class TypingRace
      * @param typist  the typist to seat
      * @throws RulesException throws exception if trying to add past typist limit
      */
-    public void addTypist(Typist typist) throws RulesException
-    {
+    public void addTypist(Typist typist) throws RulesException{
         if(this.seatsTaken >= MAX_TYPISTS){
             throw new RulesException("trying to add typists past limit");
         }
         this.typists[this.seatsTaken++] = typist;
+    }
+
+    public void checkRaceValid() throws RulesException{
+        if(this.seatsTaken < 2){
+            throw new RulesException("Not enough people for a race");
+        }
     }
 
     /**
@@ -75,16 +87,12 @@ public class TypingRace
      * All typists are reset to the beginning, then the simulation runs
      * turn by turn until at least one typist completes the full passage.
      */
-    public void startRace() throws RulesException
-    {
-        boolean finished = false;
-        if(this.seatsTaken < 2){
-            throw new RulesException("Not enough people for a race");
-        }
-
+    public void startRace() throws RulesException{
+        this.checkRaceValid();
+        
         this.steps_since_start = 0;
-        while (!finished)
-        {
+        boolean finished = false;
+        while (!finished){
             // Advance each typist by one turn
             for (Typist typist : this.typists) {
                 this.advanceTypist(typist);
@@ -187,11 +195,9 @@ public class TypingRace
      *
      * @param typist the typist to advance
      */
-    private void advanceTypist(Typist typist) throws RulesException
-    {
+    private void advanceTypist(Typist typist) throws RulesException{
         if(typist == null)return;
-        if (typist.isBurntOut())
-        {
+        if (typist.isBurntOut()){
             // Recovering from burnout — skip this turn
             typist.recoverFromBurnout();
             return;
@@ -199,22 +205,19 @@ public class TypingRace
         
         typist.setPostfix("");
         // Attempt to type a character
-        if (Math.random() < typist.getAccuracy())
-        {
+        if (Math.random() < typist.getAccuracy()){
             typist.typeCharacter();
         }
 
         // Mistype check
-        if (Math.random() < (1 - typist.getAccuracy()) * MISTYPE_BASE_CHANCE)
-        {
+        if (Math.random() < (1 - typist.getAccuracy()) * MISTYPE_BASE_CHANCE){
             typist.slideBack(SLIDE_BACK_AMOUNT);
             typist.setPostfix("[<]");
         }
 
         // Burnout check — pushing too hard increases burnout risk
         // (probability scales with accuracy squared, capped at ~0.05)
-        if (Math.random() < BURNOUT_CAP_CHANCE * typist.getAccuracy() * typist.getAccuracy())
-        {
+        if (Math.random() < BURNOUT_CAP_CHANCE * typist.getAccuracy() * typist.getAccuracy()){
             typist.burnOut(BURNOUT_DURATION);
             typist.setPostfix("~");
         }
@@ -226,8 +229,7 @@ public class TypingRace
      * @param typist the typist to check
      * @return true if their progress has reached or passed the passage length
      */
-    private boolean raceFinishedBy(Typist typist)
-    {
+    private boolean raceFinishedBy(Typist typist){
         return typist != null && typist.getProgress() >= passageLength;
     }
 
@@ -236,8 +238,7 @@ public class TypingRace
      * Shows each typist's position along the passage, burnout state,
      * and a WPM estimate based on current progress.
      */
-    public void printRace()
-    {
+    public void printRace(){
         System.out.print('\u000C'); // Clear terminal
 
         System.out.println("  TYPING RACE — passage length: " + passageLength + " chars");
@@ -262,8 +263,7 @@ public class TypingRace
      *
      * @param typist the typist whose lane to print
      */
-    private void printSeat(Typist typist)
-    {
+    private void printSeat(Typist typist){
         if(typist == null)return;
         int spacesBefore = typist.getProgress();
         int spacesAfter  = passageLength - typist.getProgress();
@@ -300,11 +300,9 @@ public class TypingRace
      * @param aChar the character to print
      * @param times how many times to print it
      */
-    private void multiplePrint(char aChar, int times)
-    {
+    private void multiplePrint(char aChar, int times){
         int i = 0;
-        while (i < times)
-        {
+        while (i < times){
             System.out.print(aChar);
             i = i + 1;
         }

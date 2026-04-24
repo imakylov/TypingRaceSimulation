@@ -86,6 +86,15 @@ public class Typist
     }
 
     /**
+     * formats accuracy into a string with set digits of precision
+     * @param precision how many digits after decimal point
+     * @return a formatted string with typist's accuracy
+     */
+    public String formattedAccuracy(int precision){
+        return String.format("%." + precision + "f", this.getAccuracy());
+    }
+
+    /**
      * Returns the typist's current progress through the passage.
      * Progress is measured in characters typed correctly so far.
      * Note: this value can decrease if the typist mistypes.

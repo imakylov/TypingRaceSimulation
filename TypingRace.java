@@ -59,15 +59,15 @@ public class TypingRace
     /**
      * Seats a typist.
      *
-     * @param theTypist  the typist to seat
+     * @param typist  the typist to seat
      * @throws RulesException throws exception if trying to add past typist limit
      */
-    public void addTypist(Typist theTypist) throws RulesException
+    public void addTypist(Typist typist) throws RulesException
     {
         if(this.seatsTaken >= MAX_TYPISTS){
             throw new RulesException("trying to add typists past limit");
         }
-        this.typists[this.seatsTaken++] = theTypist;
+        this.typists[this.seatsTaken++] = typist;
     }
 
     /**
@@ -123,9 +123,9 @@ public class TypingRace
     private void handleWinningTypists(){
         for(Typist typist : this.typists){
             if(raceFinishedBy(typist)){
-                String oldAcc = String.format("%.3f", typist.getAccuracy());
+                String oldAcc = typist.formattedAccuracy(3);
                 typist.winRace();
-                String newAcc = String.format("%.3f", typist.getAccuracy());
+                String newAcc = typist.formattedAccuracy(3);
                 this.printGoodMessage(typist.getName() + " won!\nAccuracy improved from " + oldAcc + " to " + newAcc);
             }
         }
@@ -185,50 +185,50 @@ public class TypingRace
      *
      * state of the typist is symbolically stored in postfix and cleared if typist typed correctly.
      *
-     * @param theTypist the typist to advance
+     * @param typist the typist to advance
      */
-    private void advanceTypist(Typist theTypist) throws RulesException
+    private void advanceTypist(Typist typist) throws RulesException
     {
-        if(theTypist == null)return;
-        if (theTypist.isBurntOut())
+        if(typist == null)return;
+        if (typist.isBurntOut())
         {
             // Recovering from burnout — skip this turn
-            theTypist.recoverFromBurnout();
+            typist.recoverFromBurnout();
             return;
         }
         
-        theTypist.setPostfix("");
+        typist.setPostfix("");
         // Attempt to type a character
-        if (Math.random() < theTypist.getAccuracy())
+        if (Math.random() < typist.getAccuracy())
         {
-            theTypist.typeCharacter();
+            typist.typeCharacter();
         }
 
         // Mistype check
-        if (Math.random() < (1 - theTypist.getAccuracy()) * MISTYPE_BASE_CHANCE)
+        if (Math.random() < (1 - typist.getAccuracy()) * MISTYPE_BASE_CHANCE)
         {
-            theTypist.slideBack(SLIDE_BACK_AMOUNT);
-            theTypist.setPostfix("[<]");
+            typist.slideBack(SLIDE_BACK_AMOUNT);
+            typist.setPostfix("[<]");
         }
 
         // Burnout check — pushing too hard increases burnout risk
         // (probability scales with accuracy squared, capped at ~0.05)
-        if (Math.random() < BURNOUT_CAP_CHANCE * theTypist.getAccuracy() * theTypist.getAccuracy())
+        if (Math.random() < BURNOUT_CAP_CHANCE * typist.getAccuracy() * typist.getAccuracy())
         {
-            theTypist.burnOut(BURNOUT_DURATION);
-            theTypist.setPostfix("~");
+            typist.burnOut(BURNOUT_DURATION);
+            typist.setPostfix("~");
         }
     }
 
     /**
      * Returns true if the given typist has completed the full passage.
      *
-     * @param theTypist the typist to check
+     * @param typist the typist to check
      * @return true if their progress has reached or passed the passage length
      */
-    private boolean raceFinishedBy(Typist theTypist)
+    private boolean raceFinishedBy(Typist typist)
     {
-        return theTypist != null && theTypist.getProgress() >= passageLength;
+        return typist != null && typist.getProgress() >= passageLength;
     }
 
     /**
@@ -260,35 +260,35 @@ public class TypingRace
      *   |          ⌨           | TURBOFINGERS (Accuracy: 0.85)
      *   |    A~                 | HUNT_N_PECK  (Accuracy: 0.40) BURNT OUT (2 turns)
      *
-     * @param theTypist the typist whose lane to print
+     * @param typist the typist whose lane to print
      */
-    private void printSeat(Typist theTypist)
+    private void printSeat(Typist typist)
     {
-        if(theTypist == null)return;
-        int spacesBefore = theTypist.getProgress();
-        int spacesAfter  = passageLength - theTypist.getProgress();
+        if(typist == null)return;
+        int spacesBefore = typist.getProgress();
+        int spacesAfter  = passageLength - typist.getProgress();
 
         System.out.print('|');
         multiplePrint(' ', spacesBefore);
 
-        System.out.print(theTypist.getSymbol());
-        spacesAfter -= theTypist.getPostfix().length();
-        System.out.print(theTypist.getPostfix());
+        System.out.print(typist.getSymbol());
+        spacesAfter -= typist.getPostfix().length();
+        System.out.print(typist.getPostfix());
 
         multiplePrint(' ', spacesAfter);
         System.out.print("| ");
 
         // Print name, wpm and accuracy
-        System.out.print(theTypist.getName() + " | " + this.calculateWPM(theTypist) + " WPM");
-        System.out.print(" (Accuracy: " + String.format("%.2f", theTypist.getAccuracy()) + ")");
-        if (theTypist.isBurntOut()){
-            System.out.print(" BURNT OUT (" + theTypist.getBurnoutTurnsRemaining() + " turns)");
+        System.out.print(typist.getName() + " | " + this.calculateWPM(typist) + " WPM");
+        System.out.print(" (Accuracy: " + typist.formattedAccuracy(2) + ")");
+        if (typist.isBurntOut()){
+            System.out.print(" BURNT OUT (" + typist.getBurnoutTurnsRemaining() + " turns)");
         }System.out.println();
     }
 
-    private int calculateWPM(Typist theTypist){
+    private int calculateWPM(Typist typist){
         if(this.steps_since_start == 0)return 0;
-        double wordsProgress = theTypist.getProgress() / CHARACTERS_IN_WORD;
+        double wordsProgress = typist.getProgress() / CHARACTERS_IN_WORD;
         double minutesPassed = this.steps_since_start * STEP_DURATION_MS / 1000.0 / 60.0;
         double wpm = wordsProgress / minutesPassed;
         return (int) wpm;

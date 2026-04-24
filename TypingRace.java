@@ -32,11 +32,14 @@ public class TypingRace
      *
      * @param passageLength the number of characters in the passage to type
      */
-    public TypingRace(int passageLength){
-        this.passageLength = passageLength;
+    public TypingRace(){
         this.typists = new Typist[MAX_TYPISTS];
         this.seatsTaken = 0;
         this.steps_since_start = 0;
+    }
+    public TypingRace(int passageLength){
+        this();
+        this.passageLength = passageLength;
     }
 
     /**
@@ -79,6 +82,9 @@ public class TypingRace
     public void checkRaceValid() throws RulesException{
         if(this.seatsTaken < 2){
             throw new RulesException("Not enough people for a race");
+        }
+        if(this.passageLength == 0){
+            throw new RulesException("Passage is not set");
         }
     }
 

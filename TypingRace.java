@@ -78,8 +78,8 @@ public class TypingRace
     public void startRace() throws RulesException
     {
         boolean finished = false;
-        if(this.seatsTaken == 0){
-            throw new RulesException("Race is empty");
+        if(this.seatsTaken < 2){
+            throw new RulesException("Not enough people for a race");
         }
 
         this.steps_since_start = 0;
@@ -102,7 +102,7 @@ public class TypingRace
 
             this.steps_since_start++;
             if(TimeUnit.MILLISECONDS.toMinutes(this.steps_since_start * STEP_DURATION_MS) >= MINS_TO_FINISH_RACE){
-                System.out.println("Race finished by timeout!");
+                this.printSystemMessage("Race finished by timeout!");
                 break;
             }
             // Wait 200ms between turns so the animation is visible
@@ -112,24 +112,64 @@ public class TypingRace
                 throw new RulesException("Race interrupted!");
             }
         }
+        this.handleWinningTypists();
+        this.printSystemMessage("The race went on for " + this.timeSinceStart());
+    }
+    
+    /**
+     * does all the preparations for all winning typists.
+     * More specificallty calls winRace for all winners and prints a winning message
+    */
+    private void handleWinningTypists(){
         for(Typist typist : this.typists){
             if(raceFinishedBy(typist)){
-                System.out.println(typist.getName() + " won!");
                 String oldAcc = String.format("%.3f", typist.getAccuracy());
                 typist.winRace();
                 String newAcc = String.format("%.3f", typist.getAccuracy());
-                System.out.println("Accuracy improved from " + oldAcc + " to " + newAcc);
+                this.printGoodMessage(typist.getName() + " won!\nAccuracy improved from " + oldAcc + " to " + newAcc);
             }
         }
+    }
+
+    /**
+     * calculates and formats the time since start of the race. if 0 minutes passed only shows seconds
+     * @return time since start as a string in form "([0-9]+ minutes and )?[0-9]+ seconds"
+     */
+    private String timeSinceStart(){
         int ms_since_start = this.steps_since_start * STEP_DURATION_MS;
         long seconds = TimeUnit.MILLISECONDS.toSeconds(ms_since_start);
         long minutes = TimeUnit.SECONDS.toMinutes(seconds);
         seconds -= TimeUnit.MINUTES.toSeconds(minutes);
-        System.out.print("The race went on for ");
+        String message = "";
         if(minutes != 0){
-            System.out.print(minutes + " minutes and ");
+            message += minutes + " minutes and ";
         }
-        System.out.println(seconds + " seconds.");
+        message += seconds + " seconds.";
+        return message;
+    }
+
+    /**
+     * same as printMessage, can be used by subclasses to signify a positive message
+     * @param message the message to be printed
+     */
+    private void printGoodMessage(String message){
+        printMessage(message);
+    }
+
+    /**
+     * same as printMessage, can be used by subclasses to signify a system message
+     * @param message the message to be printed
+     */
+    private void printSystemMessage(String message){
+        printMessage(message);
+    }
+
+    /**
+     * prints the message to the user
+     * @param message the message to be printed
+     */
+    private void printMessage(String message){
+        System.out.println(message);
     }
 
     /**
@@ -238,19 +278,20 @@ public class TypingRace
         multiplePrint(' ', spacesAfter);
         System.out.print("| ");
 
-        double wpm = 0;
-        if(this.steps_since_start != 0){
-            double wordsProgress = theTypist.getProgress() / CHARACTERS_IN_WORD;
-            double minutesPassed = this.steps_since_start * STEP_DURATION_MS / 1000.0 / 60.0;
-            wpm = wordsProgress / minutesPassed;
-        }
-
         // Print name, wpm and accuracy
-        System.out.print(theTypist.getName() + " | " + (int) wpm + " WPM");
+        System.out.print(theTypist.getName() + " | " + this.calculateWPM(theTypist) + " WPM");
         System.out.print(" (Accuracy: " + String.format("%.2f", theTypist.getAccuracy()) + ")");
         if (theTypist.isBurntOut()){
             System.out.print(" BURNT OUT (" + theTypist.getBurnoutTurnsRemaining() + " turns)");
         }System.out.println();
+    }
+
+    private int calculateWPM(Typist theTypist){
+        if(this.steps_since_start == 0)return 0;
+        double wordsProgress = theTypist.getProgress() / CHARACTERS_IN_WORD;
+        double minutesPassed = this.steps_since_start * STEP_DURATION_MS / 1000.0 / 60.0;
+        double wpm = wordsProgress / minutesPassed;
+        return (int) wpm;
     }
 
     /**

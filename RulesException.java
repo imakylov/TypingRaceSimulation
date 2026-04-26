@@ -1,5 +1,5 @@
 /**
- * An exception that is called when a method is called improperly according to the rules of the race.
+ * An exception that is thrown when a method is called improperly according to the rules of the race.
  * Logging and displaying it to the user is handled at the highest method of the stack.
  *
  * @author Adil Akylov

@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -7,23 +8,17 @@ import java.util.concurrent.TimeUnit;
  * @author Adil Akylov
  * @version 1.0
  */
-public class TypingRace
+public class TypingRace<T extends Typist>
 {
-    private int passageLength;
+    protected int passageLength;
     private int steps_since_start;
-    private final Typist[] typists;
-    private int seatsTaken;
+    protected ArrayList<T> typists;
+    protected int seatsTaken;
     
-    public static final int MAX_TYPISTS = 6;
-    private static final int STEP_DURATION_MS = 200;
-    private static final int MINS_TO_FINISH_RACE = 2;
     private static final double CHARACTERS_IN_WORD = 5;
-
-    // Accuracy thresholds and penalties for mistype and burnout events
-    private static final double MISTYPE_BASE_CHANCE = 0.3;
-    private static final double BURNOUT_CAP_CHANCE = 0.05;
-    private static final int    SLIDE_BACK_AMOUNT   = 2;
-    private static final int    BURNOUT_DURATION     = 3;
+    public int getMaxTypists(){return 3;}
+    public int getStepDurationMS(){return 200;}
+    public int getMinsToFinishRace(){return 2;}
 
     /**
      * Constructor for objects of class TypingRace.
@@ -33,34 +28,17 @@ public class TypingRace
      * @param passageLength the number of characters in the passage to type
      */
     public TypingRace(int passageLength){
-        this.passageLength = passageLength;
-        this.typists = new Typist[MAX_TYPISTS];
+        this.typists = new ArrayList<>();
         this.seatsTaken = 0;
         this.steps_since_start = 0;
+        this.passageLength = passageLength;
     }
 
     /**
      * @return how many typist seats are taken
      */
     public int getSeatsTaken(){
-        return this.seatsTaken;
-    }
-
-    /**
-     * Sets this race's passage length
-     * @param length the length to be set
-     */
-    public void setPassageLength(int length){
-        this.passageLength = length;
-    }
-
-    /**
-     * @return an array of typists
-     */
-    public Typist[] getTypists(){
-        Typist[] trimmed = new Typist[this.seatsTaken];
-        System.arraycopy(this.typists, 0, trimmed, 0, this.seatsTaken);
-        return trimmed;
+        return this.typists.size();
     }
 
     /**
@@ -69,15 +47,15 @@ public class TypingRace
      * @param typist  the typist to seat
      * @throws RulesException throws exception if trying to add past typist limit
      */
-    public void addTypist(Typist typist) throws RulesException{
-        if(this.seatsTaken >= MAX_TYPISTS){
+    public void addTypist(T typist) throws RulesException{
+        if(this.seatsTaken >= this.getMaxTypists()){
             throw new RulesException("trying to add typists past limit");
         }
-        this.typists[this.seatsTaken++] = typist;
+        this.typists.add(typist);
     }
 
     public void checkRaceValid() throws RulesException{
-        if(this.seatsTaken < 2){
+        if(this.getSeatsTaken() < 2){
             throw new RulesException("Not enough people for a race");
         }
     }
@@ -94,28 +72,28 @@ public class TypingRace
         boolean finished = false;
         while (!finished){
             // Advance each typist by one turn
-            for (Typist typist : this.typists) {
-                this.advanceTypist(typist);
+            for (T typist : this.typists) {
+                typist.advance();
             }
 
             // Print the current state of the race
             printRace();
 
             // Check if any typist has finished the passage
-            for(Typist typist : this.typists){
+            for(T typist : this.typists){
                 if(raceFinishedBy(typist)){
                     finished = true;
                 }
             }
 
             this.steps_since_start++;
-            if(TimeUnit.MILLISECONDS.toMinutes(this.steps_since_start * STEP_DURATION_MS) >= MINS_TO_FINISH_RACE){
+            if(TimeUnit.MILLISECONDS.toMinutes(this.steps_since_start * this.getStepDurationMS()) >= this.getMinsToFinishRace()){
                 this.printSystemMessage("Race finished by timeout!");
                 break;
             }
             // Wait 200ms between turns so the animation is visible
             try {
-                TimeUnit.MILLISECONDS.sleep(STEP_DURATION_MS);
+                TimeUnit.MILLISECONDS.sleep(this.getStepDurationMS());
             } catch (InterruptedException e) {
                 throw new RulesException("Race interrupted!");
             }
@@ -128,8 +106,8 @@ public class TypingRace
      * does all the preparations for all winning typists.
      * More specificallty calls winRace for all winners and prints a winning message
     */
-    private void handleWinningTypists(){
-        for(Typist typist : this.typists){
+    protected void handleWinningTypists(){
+        for(T typist : this.typists){
             if(raceFinishedBy(typist)){
                 String oldAcc = typist.formattedAccuracy(3);
                 typist.winRace();
@@ -143,8 +121,8 @@ public class TypingRace
      * calculates and formats the time since start of the race. if 0 minutes passed only shows seconds
      * @return time since start as a string in form "([0-9]+ minutes and )?[0-9]+ seconds"
      */
-    private String timeSinceStart(){
-        int ms_since_start = this.steps_since_start * STEP_DURATION_MS;
+    protected String timeSinceStart(){
+        int ms_since_start = this.steps_since_start * this.getStepDurationMS();
         long seconds = TimeUnit.MILLISECONDS.toSeconds(ms_since_start);
         long minutes = TimeUnit.SECONDS.toMinutes(seconds);
         seconds -= TimeUnit.MINUTES.toSeconds(minutes);
@@ -160,7 +138,7 @@ public class TypingRace
      * same as printMessage, can be used by subclasses to signify a positive message
      * @param message the message to be printed
      */
-    private void printGoodMessage(String message){
+    protected void printGoodMessage(String message){
         printMessage(message);
     }
 
@@ -168,7 +146,7 @@ public class TypingRace
      * same as printMessage, can be used by subclasses to signify a system message
      * @param message the message to be printed
      */
-    private void printSystemMessage(String message){
+    protected void printSystemMessage(String message){
         printMessage(message);
     }
 
@@ -176,51 +154,8 @@ public class TypingRace
      * prints the message to the user
      * @param message the message to be printed
      */
-    private void printMessage(String message){
+    protected void printMessage(String message){
         System.out.println(message);
-    }
-
-    /**
-     * Simulates one turn for a typist.
-     *
-     * If the typist is burnt out, they recover one turn's worth and skip typing.
-     * Otherwise:
-     *   - They may type a character (advancing progress) based on their accuracy.
-     *   - They may mistype (sliding back) — the chance of a mistype should decrease
-     *     for more accurate typists.
-     *   - They may burn out — more likely for very high-accuracy typists
-     *     who are pushing themselves too hard.
-     *
-     * state of the typist is symbolically stored in postfix and cleared if typist typed correctly.
-     *
-     * @param typist the typist to advance
-     */
-    private void advanceTypist(Typist typist) throws RulesException{
-        if(typist == null)return;
-        if (typist.isBurntOut()){
-            // Recovering from burnout — skip this turn
-            typist.recoverFromBurnout();
-            return;
-        }
-        
-        typist.setPostfix("");
-        // Attempt to type a character
-        if (Math.random() < typist.getAccuracy()){
-            typist.typeCharacter();
-        }
-
-        // Mistype check
-        if (Math.random() < (1 - typist.getAccuracy()) * MISTYPE_BASE_CHANCE){
-            typist.slideBack(SLIDE_BACK_AMOUNT);
-            typist.setPostfix("[<]");
-        }
-
-        // Burnout check — pushing too hard increases burnout risk
-        // (probability scales with accuracy squared, capped at ~0.05)
-        if (Math.random() < BURNOUT_CAP_CHANCE * typist.getAccuracy() * typist.getAccuracy()){
-            typist.burnOut(BURNOUT_DURATION);
-            typist.setPostfix("~");
-        }
     }
 
     /**
@@ -229,7 +164,7 @@ public class TypingRace
      * @param typist the typist to check
      * @return true if their progress has reached or passed the passage length
      */
-    private boolean raceFinishedBy(Typist typist){
+    protected boolean raceFinishedBy(T typist){
         return typist != null && typist.getProgress() >= passageLength;
     }
 
@@ -245,7 +180,7 @@ public class TypingRace
         multiplePrint('=', passageLength + 3);
         System.out.println();
 
-        for(Typist typist : this.typists){
+        for(T typist : this.typists){
             printSeat(typist);
         }
 
@@ -263,7 +198,7 @@ public class TypingRace
      *
      * @param typist the typist whose lane to print
      */
-    private void printSeat(Typist typist){
+    protected void printSeat(T typist){
         if(typist == null)return;
         int spacesBefore = typist.getProgress();
         int spacesAfter  = passageLength - typist.getProgress();
@@ -286,10 +221,10 @@ public class TypingRace
         }System.out.println();
     }
 
-    private int calculateWPM(Typist typist){
+    protected int calculateWPM(T typist){
         if(this.steps_since_start == 0)return 0;
         double wordsProgress = typist.getProgress() / CHARACTERS_IN_WORD;
-        double minutesPassed = this.steps_since_start * STEP_DURATION_MS / 1000.0 / 60.0;
+        double minutesPassed = this.steps_since_start * this.getStepDurationMS() / 1000.0 / 60.0;
         double wpm = wordsProgress / minutesPassed;
         return (int) wpm;
     }

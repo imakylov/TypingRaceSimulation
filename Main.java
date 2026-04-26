@@ -15,7 +15,7 @@ public class Main {
      */
     static Scanner scanner = new Scanner(System.in);
     public static void main(String[] args) {
-        TypingRace race = new TypingRace(askInt("What is the passage length?"));
+        TypingRace<Typist> race = new TypingRace<>(askInt("What is the passage length?"));
         showCommands();
         String command = "";
         while(!command.equals("e")){
@@ -36,7 +36,7 @@ public class Main {
                     }
                 }
                 case "q" -> {
-                    race = new TypingRace(40);
+                    race = new TypingRace<>(40);
                     try{
                         race.addTypist(new Typist('①', "TURBOFINGERS", 0.85));
                         race.addTypist(new Typist('②', "QWERTY_QUEEN",  0.60));
@@ -47,7 +47,7 @@ public class Main {
                     }
                 }
                 case "a" -> {
-                    if(race.getSeatsTaken() == TypingRace.MAX_TYPISTS){
+                    if(race.getSeatsTaken() == race.getMaxTypists()){
                         System.out.println("All seats taken");
                         continue;
                     }
@@ -62,7 +62,7 @@ public class Main {
                     }
                 }
                 case "c" -> {
-                    race = new TypingRace(askInt("What is the passage length?"));
+                    race = new TypingRace<>(askInt("What is the passage length?"));
                 }
                 default -> {
                     System.out.println("Command unrecognized");

@@ -5,7 +5,7 @@ import java.util.Random;
  * Tests public methods for keeping all fields proper and displays the test failed if the fields are improper.
  *
  * @author Adil Akylov
- * @version 1.0
+ * @version 1.1
  */
 public class TypistTests {
     final static Random rand = new Random();

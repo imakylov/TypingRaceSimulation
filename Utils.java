@@ -1,4 +1,18 @@
+/**
+ * A class that holds static methods and constants useful for different purposes.
+ *
+ * @author Adil Akylov
+ * @version 1.1
+ */
 public class Utils {
+    /**
+     * takes some text and breakes it into lines between words to be at max limit width.
+     * A line can only be more if there is a word that is longer then limit
+     *
+     * @param passage the text that needs to be broken
+     * @param limit max width of a line
+     * @return the passage with some spaces replace with new lines to be at max limit width
+     */
     public static String breakWords(String passage, int limit){
         String result = "";
         String[] words = passage.split(" ");

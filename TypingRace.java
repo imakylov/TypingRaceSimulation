@@ -6,7 +6,7 @@ import java.util.concurrent.TimeUnit;
  * advancing character by character, sliding backwards when they mistype or burning out if they push too hard.
  *
  * @author Adil Akylov
- * @version 1.0
+ * @version 1.1
  */
 public class TypingRace<T extends Typist>
 {
@@ -54,23 +54,32 @@ public class TypingRace<T extends Typist>
         this.typists.add(typist);
     }
 
-    public void checkRaceValid() throws RulesException{
+    /**
+     * checks if the race is ready to start, if not returns the exception that should happen.
+     *
+     * @return the error that should happen if the race were to start
+     */
+    public RulesException checkRaceValid(){
         if(this.getSeatsTaken() < 2){
-            throw new RulesException("Not enough people for a race");
+            return new RulesException("Not enough people for a race");
         }
         if(this.passageLength == 0){
-            throw new RulesException("Passage is not set");
-        }
+            return new RulesException("Passage is not set");
+        }return null;
     }
-
+    
     /**
      * Starts the typing race.
      * All typists are reset to the beginning, then the simulation runs
      * turn by turn until at least one typist completes the full passage.
+     *
+     * @throws RulesException
      */
     public void startRace() throws RulesException{
-        this.checkRaceValid();
-        
+        RulesException exception = this.checkRaceValid();
+        if(exception != null){
+            throw exception;
+        }
         this.steps_since_start = 0;
         boolean finished = false;
         while (!finished){
@@ -224,6 +233,12 @@ public class TypingRace<T extends Typist>
         }System.out.println();
     }
 
+    /**
+     * Calculates the wpm from the steps since start of the race and progress of the typist.
+     *
+     * @param typist the typist whose wmp to calculate
+     * @return the wpm of this typist
+     */
     protected int calculateWPM(T typist){
         if(this.steps_since_start == 0)return 0;
         double wordsProgress = typist.getProgress() / CHARACTERS_IN_WORD;

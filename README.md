@@ -8,7 +8,11 @@ A simplified simulation of a typing race build with java to run in a terminal wi
 
 ## Running
 
+### Console version
 To run the typing race simulator simply run the Main.java file.
+
+### GUI version
+For that just run SwingTypingRace.java (may change later)
 
 ## Testing
 

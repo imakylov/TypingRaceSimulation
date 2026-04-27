@@ -3,7 +3,7 @@
  * Holds all the relevant information to the typist and is responsible for keeping all fields proper through public methods.
  *
  * @author Adil Akylov
- * @version 1.0
+ * @version 1.1
  */
 public class Typist
 {
@@ -156,7 +156,7 @@ public class Typist
     }
 
     /**
-     * Simulates one turn for a typist.
+     * Simulates one turn.
      *
      * If the typist is burnt out, they recover one turn's worth and skip typing.
      * Otherwise:

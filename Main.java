@@ -5,15 +5,15 @@ import java.util.Scanner;
  * Creates a TypingRace with three typists with different accuracies and starts the race.
  *
  * @author Adil Akylov
- * @version 1.0
+ * @version 1.1
  */
 public class Main {
+    static Scanner scanner = new Scanner(System.in);
     /**
      * Entry point when running Main.java.
      * Creates a TypingRace with three typists with different accuracies and starts the race.
      *
      */
-    static Scanner scanner = new Scanner(System.in);
     public static void main(String[] args) {
         TypingRace<Typist> race = new TypingRace<>(askInt("What is the passage length?"));
         showCommands();

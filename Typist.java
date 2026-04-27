@@ -16,6 +16,12 @@ public class Typist
     private boolean isBurntOut;
     private int burnOutTurnsLeft;
 
+    // Accuracy thresholds and penalties for mistype and burnout events
+    protected final double MISTYPE_BASE_CHANCE = 0.3;
+    protected final double BURNOUT_CAP_CHANCE = 0.05;
+    protected final int    SLIDE_BACK_AMOUNT   = 2;
+    protected final int    BURNOUT_DURATION     = 3;
+
     /**
      * Constructor for objects of class Typist.
      * Creates a new typist with a given symbol, name, and accuracy rating.
@@ -147,6 +153,48 @@ public class Typist
         this.isBurntOut = false;
         this.burnOutTurnsLeft = 0;
         this.specialPostfix = "";
+    }
+
+    /**
+     * Simulates one turn for a typist.
+     *
+     * If the typist is burnt out, they recover one turn's worth and skip typing.
+     * Otherwise:
+     *   - They may type a character (advancing progress) based on their accuracy.
+     *   - They may mistype (sliding back) — the chance of a mistype should decrease
+     *     for more accurate typists.
+     *   - They may burn out — more likely for very high-accuracy typists
+     *     who are pushing themselves too hard.
+     *
+     * state of the typist is symbolically stored in postfix and cleared if typist typed correctly.
+     *
+     * @param typist the typist to advance
+     */
+    public void advance() throws RulesException{
+        if (this.isBurntOut()){
+            // Recovering from burnout — skip this turn
+            this.recoverFromBurnout();
+            return;
+        }
+        
+        this.setPostfix("");
+        // Attempt to type a character
+        if (Math.random() < this.getAccuracy()){
+            this.typeCharacter();
+        }
+
+        // Mistype check
+        if (Math.random() < (1 - this.getAccuracy()) * this.MISTYPE_BASE_CHANCE){
+            this.slideBack(this.SLIDE_BACK_AMOUNT);
+            this.setPostfix("[<]");
+        }
+
+        // Burnout check — pushing too hard increases burnout risk
+        // (probability scales with accuracy squared, capped at ~0.05)
+        if (Math.random() < this.BURNOUT_CAP_CHANCE * this.getAccuracy() * this.getAccuracy()){
+            this.burnOut(this.BURNOUT_DURATION);
+            this.setPostfix("~");
+        }
     }
 
     /**

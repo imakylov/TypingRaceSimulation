@@ -55,6 +55,18 @@ public class TypingRace<T extends Typist>
     }
 
     /**
+     * Removes a typist from seats.
+     *
+     * @param typist  the typist to seat
+     * @throws RulesException throws exception if trying to remove nonexistant typist
+     */
+    public void removeTypist(T typist) throws RulesException{
+        if(!this.typists.remove(typist)){
+            throw new RulesException("trying to remove typist that does not exist", false);
+        }
+    }
+
+    /**
      * checks if the race is ready to start, if not returns the exception that should happen.
      *
      * @return the error that should happen if the race were to start

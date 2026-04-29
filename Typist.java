@@ -1,3 +1,5 @@
+import java.util.Objects;
+
 /**
  * A class for creating typists for races.
  * Holds all the relevant information to the typist and is responsible for keeping all fields proper through public methods.
@@ -271,4 +273,22 @@ public class Typist
         return this.specialPostfix;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof Typist)) return false;
+        Typist other = (Typist) obj;
+        if(this.typistSymbol != other.typistSymbol) return false;
+        if(!this.typistName.equals(other.typistName)) return false;
+        if(!this.specialPostfix.equals(other.specialPostfix)) return false;
+        if(this.typistAccuracy != other.typistAccuracy) return false;
+        if(this.raceProgress != other.raceProgress) return false;
+        if(this.isBurntOut != other.isBurntOut) return false;
+        return this.burnOutTurnsLeft == other.burnOutTurnsLeft;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.typistName);
+    }
 }

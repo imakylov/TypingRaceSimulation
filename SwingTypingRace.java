@@ -43,6 +43,7 @@ public class SwingTypingRace extends TypingRace<SwingTypist> {
     }
 
     private void prepareFields(){
+        this.finilised = true;
         this.tracks = new JTextPane[this.getSeatsTaken()];
         this.accuracies = new JLabel[this.getSeatsTaken()];
         this.lastProgresses = new int[this.getSeatsTaken()];
@@ -54,10 +55,9 @@ public class SwingTypingRace extends TypingRace<SwingTypist> {
     /**
      * builds the race layout including all tracks and typist infos
      */
-    private void buildLayout(){
+    public void buildLayout(){
         this.prepareFields();
         JPanel tracksPanel = new JPanel(new FlowLayout());
-        tracksPanel.setSize(this.frame.getSize());
         for(int i=0;i<this.getSeatsTaken();i++){
             tracksPanel.add(this.buildTypistLane(i));
         }this.printRace();
@@ -104,10 +104,29 @@ public class SwingTypingRace extends TypingRace<SwingTypist> {
      */
     @Override
     public void printRace(){
+        if(!this.finilised)this.buildLayout();
         for(int i=0;i<this.getSeatsTaken();i++){
             this.renderTrackProgress(i);
             this.renderAccuracy(i);
         }
+    }
+
+    @Override
+    public void addTypist(SwingTypist typist) throws RulesException{
+        if(this.finilised)throw new RulesException("seats cannot be changed after race is started", false);
+        super.addTypist(typist);
+    }
+
+    @Override
+    public void removeTypist(SwingTypist typist) throws RulesException{
+        if(this.finilised)throw new RulesException("seats cannot be changed after race is started", false);
+        super.removeTypist(typist);
+    }
+
+    @Override
+    protected void prepareForRace(){
+        super.prepareForRace();
+        if(!this.finilised)this.buildLayout();
     }
     
     /**

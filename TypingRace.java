@@ -80,6 +80,10 @@ public class TypingRace<T extends Typist>
         }return null;
     }
     
+    protected void prepareForRace(){
+        this.steps_since_start = 0;
+    }
+    
     /**
      * Starts the typing race.
      * All typists are reset to the beginning, then the simulation runs
@@ -92,7 +96,7 @@ public class TypingRace<T extends Typist>
         if(exception != null){
             throw exception;
         }
-        this.steps_since_start = 0;
+        this.prepareForRace();
         boolean finished = false;
         while (!finished){
             // Advance each typist by one turn

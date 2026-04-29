@@ -15,7 +15,6 @@ public class TypingRace<T extends Typist>
     protected ArrayList<T> typists;
     protected int seatsTaken;
     
-    private static final double CHARACTERS_IN_WORD = 5;
     public int getMaxTypists(){return 3;}
     public int getStepDurationMS(){return 200;}
     public int getMinsToFinishRace(){return 2;}
@@ -79,7 +78,7 @@ public class TypingRace<T extends Typist>
             return new RulesException("Passage is not set", false);
         }return null;
     }
-    
+
     protected void prepareForRace(){
         this.steps_since_start = 0;
     }
@@ -257,7 +256,7 @@ public class TypingRace<T extends Typist>
      */
     protected int calculateWPM(T typist){
         if(this.steps_since_start == 0)return 0;
-        double wordsProgress = typist.getProgress() / CHARACTERS_IN_WORD;
+        double wordsProgress = typist.getProgress() / Constants.CHARACTERS_IN_WORD;
         double minutesPassed = this.steps_since_start * this.getStepDurationMS() / 1000.0 / 60.0;
         double wpm = wordsProgress / minutesPassed;
         return (int) wpm;

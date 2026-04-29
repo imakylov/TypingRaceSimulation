@@ -1,4 +1,3 @@
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -22,9 +21,6 @@ public class SwingTypingRace extends TypingRace<SwingTypist> {
     private int[] lastProgresses;
     private JLabel[] accuracies;
 
-    private final Color[] COLORS = {Color.red, Color.orange, Color.yellow, Color.green, Color.blue, Color.pink};
-    private final int FRAME_WIDTH = 640+320;
-    private final int FRAME_HEIGHT = 360+180;
     @Override
     public int getMaxTypists(){return 6;}
 
@@ -93,7 +89,7 @@ public class SwingTypingRace extends TypingRace<SwingTypist> {
         this.tracks[i].setEditable(false);
         this.writtenStyles[i] = this.tracks[i].addStyle("written", null);
         this.unwrittenStyles[i] = this.tracks[i].addStyle("unwritten", null);
-        StyleConstants.setForeground(this.writtenStyles[i], this.COLORS[i]);
+        StyleConstants.setForeground(this.writtenStyles[i], Constants.COLORS[i]);
         StyleConstants.setUnderline(this.writtenStyles[i], true);
         this.tracks[i].setText(Utils.breakWords(this.passage, 60));
         return this.tracks[i];

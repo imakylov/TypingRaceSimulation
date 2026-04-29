@@ -49,7 +49,7 @@ public class TypingRace<T extends Typist>
      */
     public void addTypist(T typist) throws RulesException{
         if(this.seatsTaken >= this.getMaxTypists()){
-            throw new RulesException("trying to add typists past limit");
+            throw new RulesException("trying to add typists past limit", false);
         }
         this.typists.add(typist);
     }
@@ -61,10 +61,10 @@ public class TypingRace<T extends Typist>
      */
     public RulesException checkRaceValid(){
         if(this.getSeatsTaken() < 2){
-            return new RulesException("Not enough people for a race");
+            return new RulesException("Not enough people for a race", false);
         }
         if(this.passageLength == 0){
-            return new RulesException("Passage is not set");
+            return new RulesException("Passage is not set", false);
         }return null;
     }
     
@@ -107,7 +107,7 @@ public class TypingRace<T extends Typist>
             try {
                 TimeUnit.MILLISECONDS.sleep(this.getStepDurationMS());
             } catch (InterruptedException e) {
-                throw new RulesException("Race interrupted!");
+                throw new RulesException("Race interrupted!", false);
             }
         }
         this.handleWinningTypists();

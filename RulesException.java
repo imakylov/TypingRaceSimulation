@@ -6,14 +6,16 @@
  * @version 1.1
  */
 public class RulesException extends Exception{
-    public String message;
+    public final String message;
+    public final boolean fatal;
     /**
      * Constructor for objects of class RulesException.
      * The message should be displayed for debugging when the exception is caught.
      *
      * @param message the reason for the RulesException.
      */
-    public RulesException(String message){
+    public RulesException(String message, boolean fatal){
         this.message = message;
+        this.fatal = fatal;
     }
 }

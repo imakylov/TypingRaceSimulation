@@ -14,7 +14,7 @@ public class Main {
      * Creates a TypingRace with three typists with different accuracies and starts the race.
      *
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws RulesException{
         TypingRace<Typist> race = new TypingRace<>(askInt("What is the passage length?"));
         showCommands();
         String command = "";
@@ -33,6 +33,7 @@ public class Main {
                     }catch (RulesException e){
                         System.out.println("Rules Exception!!");
                         System.out.println(e.message);
+                        if(e.fatal) throw e;
                     }
                 }
                 case "q" -> {
@@ -44,6 +45,7 @@ public class Main {
                     }catch (RulesException e){
                         System.out.println("Rules Exception!!");
                         System.out.println(e.message);
+                        if(e.fatal)throw e;
                     }
                 }
                 case "a" -> {
@@ -59,6 +61,7 @@ public class Main {
                     }catch (RulesException e) {
                         System.out.println("Rules Exception!!");
                         System.out.println(e.message);
+                        if(e.fatal)throw e;
                     }
                 }
                 case "c" -> {

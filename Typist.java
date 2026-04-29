@@ -51,7 +51,7 @@ public class Typist
      */
     public void burnOut(int turns) throws RulesException
     {
-        if(turns <= 0) throw new RulesException("burnOut for negative or zero turns");
+        if(turns <= 0) throw new RulesException("burnOut for negative or zero turns", true);
         this.isBurntOut = true;
         this.burnOutTurnsLeft = turns;
         this.setAccuracy(.90*this.typistAccuracy);
@@ -213,7 +213,7 @@ public class Typist
      */
     public void typeCharacter() throws RulesException
     {
-        if(this.isBurntOut)throw new RulesException("trying to type character while burned out");
+        if(this.isBurntOut)throw new RulesException("trying to type character while burned out", true);
         this.raceProgress++;
         this.setAccuracy(.99*this.typistAccuracy+.01);
     }
@@ -226,7 +226,7 @@ public class Typist
      */
     public void slideBack(int amount) throws RulesException
     {
-        if(amount <= 0) throw new RulesException("slideBack amount is not positive");
+        if(amount <= 0) throw new RulesException("slideBack amount is not positive", true);
         this.raceProgress -= amount;
         if(this.raceProgress < 0) this.raceProgress = 0;
     }

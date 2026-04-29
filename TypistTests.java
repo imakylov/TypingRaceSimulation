@@ -25,6 +25,7 @@ public class TypistTests {
         } catch (RulesException e) {
             System.out.println("Rules Exception!");
             System.out.println(e.message);
+            return;
         }
         printSeparator();
         System.out.println("All Tests Passed!!");

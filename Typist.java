@@ -17,10 +17,10 @@ public class Typist
     private int burnOutTurnsLeft;
 
     // Accuracy thresholds and penalties for mistype and burnout events
-    protected final double MISTYPE_BASE_CHANCE = 0.3;
-    protected final double BURNOUT_CAP_CHANCE = 0.05;
-    protected final int    SLIDE_BACK_AMOUNT   = 2;
-    protected final int    BURNOUT_DURATION     = 3;
+    protected double getMistypeBaseChance(){return .3;}
+    protected double getBurnoutCapChance(){return .05;}
+    protected int getSlideBackAmount(){return 2;}
+    protected int getBurnoutDuration(){return 3;}
 
     /**
      * Constructor for objects of class Typist.
@@ -184,15 +184,15 @@ public class Typist
         }
 
         // Mistype check
-        if (Math.random() < (1 - this.getAccuracy()) * this.MISTYPE_BASE_CHANCE){
-            this.slideBack(this.SLIDE_BACK_AMOUNT);
+        if (Math.random() < (1 - this.getAccuracy()) * this.getMistypeBaseChance()){
+            this.slideBack(this.getSlideBackAmount());
             this.setPostfix("[<]");
         }
 
         // Burnout check — pushing too hard increases burnout risk
         // (probability scales with accuracy squared, capped at ~0.05)
-        if (Math.random() < this.BURNOUT_CAP_CHANCE * this.getAccuracy() * this.getAccuracy()){
-            this.burnOut(this.BURNOUT_DURATION);
+        if (Math.random() < this.getBurnoutCapChance() * this.getAccuracy() * this.getAccuracy()){
+            this.burnOut(this.getBurnoutDuration());
             this.setPostfix("~");
         }
     }

@@ -11,8 +11,8 @@ public class TypistTests {
     final static Random rand = new Random();
     public static void main(String[] args)
     {
+        printSeparator();
         try {
-            printSeparator();
             if(!testSlideBack())failed();
             printSeparator();
             if(!testRecoverFromBurnout())failed();
@@ -22,11 +22,12 @@ public class TypistTests {
             if(!testSetAccuracy())failed();
             printSeparator();
             if(!testTypeCharacter())failed();
-            printSeparator();
         } catch (RulesException e) {
             System.out.println("Rules Exception!");
             System.out.println(e.message);
         }
+        printSeparator();
+        System.out.println("All Tests Passed!!");
     }
 
     /**

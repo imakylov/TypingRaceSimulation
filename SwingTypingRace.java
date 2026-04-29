@@ -95,6 +95,7 @@ public class SwingTypingRace extends TypingRace<SwingTypist> {
         this.unwrittenStyles[i] = this.tracks[i].addStyle("unwritten", null);
         StyleConstants.setForeground(this.writtenStyles[i], this.COLORS[i]);
         StyleConstants.setUnderline(this.writtenStyles[i], true);
+        this.tracks[i].setText(Utils.breakWords(this.passage, 60));
         return this.tracks[i];
     }
 
@@ -126,18 +127,12 @@ public class SwingTypingRace extends TypingRace<SwingTypist> {
     private void renderTrackProgress(int i){
         int progress = Math.min(this.passageLength, this.typists.get(i).getProgress());
         if(this.lastProgresses[i] == progress)return;
-        this.lastProgresses[i] = progress;
-        this.tracks[i].setText("");
-        String displayText = Utils.breakWords(this.passage, 60);
         StyledDocument doc = this.tracks[i].getStyledDocument();
-        String written = displayText.substring(0, progress);
-        String unwritten = displayText.substring(progress);
-        try{
-            doc.insertString(doc.getLength(), written, this.writtenStyles[i]);
-            doc.insertString(doc.getLength(), unwritten, this.unwrittenStyles[i]);
-        }catch (BadLocationException e){
-            System.err.println(e.getMessage());
-        }
+        int startOfChange = Math.min(progress, this.lastProgresses[i]);
+        int lengthToChange = Math.abs(progress - this.lastProgresses[i]);
+        Style styleToChange = this.lastProgresses[i] < progress ? writtenStyles[i] : unwrittenStyles[i];
+        doc.setCharacterAttributes(startOfChange, lengthToChange, styleToChange, true);
+        this.lastProgresses[i] = progress;
     }
 
     /**
@@ -145,8 +140,8 @@ public class SwingTypingRace extends TypingRace<SwingTypist> {
      */
     public static void main(String[] args) throws RulesException{
         String passage;
-        passage = "The last man of Earth sat alone in a room. There was a knock on the door";
-        passage = "In the rigor which is space, this spacesuit was designed by engineers to maintain your life in space, and can be called the smallest spaceship";
+        passage = "The last man of Earth sat alone in a room. There was a knock on the door.";
+        passage = "In the rigor which is space, this spacesuit was designed by engineers to maintain your life in space, and can be called the smallest spaceship.";
         final SwingTypingRace race = new SwingTypingRace(passage);
         race.addTypist(new SwingTypist("TURBOFINGERS", 0.85));
         race.addTypist(new SwingTypist("QWERTY_QUEEN",  0.60));

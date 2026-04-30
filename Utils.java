@@ -1,3 +1,6 @@
+import javax.swing.BoxLayout;
+import javax.swing.JPanel;
+
 /**
  * A class that holds static methods and constants useful for different purposes.
  *
@@ -30,5 +33,19 @@ public class Utils {
             result += words[i];
         }
         return result;
+    }
+
+    public static JPanel getBoxPanel(int axis){
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, axis));
+        return panel;
+    }
+
+    public static long now(){
+        return System.currentTimeMillis();
+    }
+
+    public static boolean isPast(long timeInMS){
+        return timeInMS < Utils.now();
     }
 }

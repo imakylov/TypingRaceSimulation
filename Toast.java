@@ -6,8 +6,8 @@ class Toast extends JPanel {
     static final double LERP_COEF = .1;
     public final long creationTime;
 
-    static final int SET_WIDTH = 100;
-    static final int SET_HEIGHT = 50;
+    static final int SET_WIDTH = 200;
+    static final int SET_HEIGHT = 100;
     static final int MS_TO_APPEAR = 500;
     static final int MS_TO_START_DISAPPEARING = 2000;
     static final int DISAPPEARING_HEIGHT = 50;
@@ -19,11 +19,8 @@ class Toast extends JPanel {
         this.setOpaque(false);
         this.setLayout(new BorderLayout());
 
-        JLabel label = new JLabel(message);
-        label.setForeground(this.fg());
-
         this.setBorder(BorderFactory.createEmptyBorder(10, 15, 10, 15));
-        this.add(label, BorderLayout.CENTER);
+        this.add(Utils.getSeemlessTextArea(message));
     }
 
     public void setBounds(int x, int y){
@@ -60,10 +57,7 @@ class Toast extends JPanel {
     }
 
     protected Color bg(){
-        return new Color(50, 50, 50);
-    }
-    protected Color fg(){
-        return Color.WHITE;
+        return new Color(80, 150, 220);
     }
 
     public void lerpToY(int y){
@@ -81,5 +75,22 @@ class Toast extends JPanel {
 
         g2.dispose();
         super.paintComponent(g);
+    }
+}
+
+class BadToast extends Toast {
+    public BadToast(String message) {
+        super(message);
+    }
+    protected Color bg(){
+        return new Color(255, 100, 100);
+    }
+}
+class GoodToast extends Toast {
+    public GoodToast(String message) {
+        super(message);
+    }
+    protected Color bg(){
+        return new Color(50, 200, 100);
     }
 }

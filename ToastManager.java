@@ -68,10 +68,19 @@ public class ToastManager {
 
         ToastManager manager = ToastManager.init(frame);
         
+        JTextField input = new JTextField(40);
+        frame.add(input);
+
         JButton btn = new JButton("Show message");
-        btn.addActionListener(e -> manager.push(new Toast("Message")));
+        btn.addActionListener(e -> manager.push(new Toast(input.getText())));
+        JButton goodBtn = new JButton("Show good message");
+        goodBtn.addActionListener(e -> manager.push(new GoodToast(input.getText())));
+        JButton badBtn = new JButton("Show bad message");
+        badBtn.addActionListener(e -> manager.push(new BadToast(input.getText())));
 
         frame.add(btn);
+        frame.add(goodBtn);
+        frame.add(badBtn);
         frame.setVisible(true);
     }
 }

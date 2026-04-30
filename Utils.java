@@ -1,5 +1,6 @@
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 
 /**
  * A class that holds static methods and constants useful for different purposes.
@@ -39,6 +40,16 @@ public class Utils {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, axis));
         return panel;
+    }
+
+    public static JTextArea getSeemlessTextArea(String message){
+        JTextArea area = new JTextArea(message);
+        area.setLineWrap(true);
+        area.setWrapStyleWord(true);
+        area.setEditable(false);
+        area.setOpaque(false);
+        area.setBorder(null);
+        return area;
     }
 
     public static long now(){

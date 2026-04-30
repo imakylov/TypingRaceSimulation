@@ -1,8 +1,8 @@
-import java.util.function.Predicate;
-import java.util.function.Supplier;
-import javax.swing.BoxLayout;
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.function.*;
+import javax.swing.*;
+
 
 /**
  * A class that holds static methods and constants useful for different purposes.
@@ -99,5 +99,16 @@ public class Utils {
     }
     public static Runnable toastExceptionsIgnore(FI.SafeRunnable runnable){
         return () -> toastExceptions(runnable).get();
+    }
+
+    public static MouseAdapter onLeftClick(Runnable runnable) {
+        return new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                if(SwingUtilities.isLeftMouseButton(e)){
+                    runnable.run();
+                }
+            } 
+        };
     }
 }

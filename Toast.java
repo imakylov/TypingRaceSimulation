@@ -148,6 +148,12 @@ public class Toast extends JPanel {
         super.paintComponent(g);
     }
 
+    /**
+     * create a Toast object from a log record
+     *
+     * @param log string representing toast
+     * @return toast object with the same text and correct type
+     */
     public static Toast fromLog(String log){
         int type = log.charAt(0) - '0';
         String message = log.substring(1);

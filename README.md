@@ -12,7 +12,7 @@ A simplified simulation of a typing race build with java to run in a terminal wi
 To run the typing race simulator simply run the Main.java file.
 
 ### GUI version
-For that just run SwingTypingRace.java (may change later)
+For that just run SwingMenu.java
 
 ## Testing
 

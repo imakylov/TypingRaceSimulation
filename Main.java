@@ -5,7 +5,7 @@ import java.util.Scanner;
  * Creates a TypingRace with three typists with different accuracies and starts the race.
  *
  * @author Adil Akylov
- * @version 1.1
+ * @version 1.2
  */
 public class Main {
     static Scanner scanner = new Scanner(System.in);

@@ -5,7 +5,7 @@ import java.util.Objects;
  * Holds all the relevant information to the typist and is responsible for keeping all fields proper through public methods.
  *
  * @author Adil Akylov
- * @version 1.1
+ * @version 1.2
  */
 public class Typist
 {
@@ -273,6 +273,12 @@ public class Typist
         return this.specialPostfix;
     }
 
+    /**
+     * checks if object's fields arethe same as this typist
+     * 
+     * @param obj object to compare
+     * @return true if typist is equal
+     */
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
@@ -287,6 +293,9 @@ public class Typist
         return this.burnOutTurnsLeft == other.burnOutTurnsLeft;
     }
 
+    /**
+     * @return hash of typist's name
+     */
     @Override
     public int hashCode() {
         return Objects.hash(this.typistName);

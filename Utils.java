@@ -83,6 +83,14 @@ public class Utils {
         return timeInMS < Utils.now();
     }
 
+    /**
+     * takes a lambda that might throw rules exception and turns it into lambda that creates a toast
+     * and returns false if RulesException is called.
+     *
+     * @param <T> input to consumer
+     * @param consumer lambda that takes t argument and might throw RulesException
+     * @return lambda that returns true if exception is not thrown and false otherwise
+     */
     public static <T> Predicate<T> toastExceptions(FI.SafeConsumer<T> consumer){
         return t -> {
             try{
@@ -94,13 +102,32 @@ public class Utils {
             return true;
         };
     }
+
+    /**
+     * takes a lambda that might throw rules exception and turns it into lambda that creates a toast
+     * and returns false if RulesException is called.
+     *
+     * @param runnable lambda that might throw RulesException
+     * @return lambda that returns true if exception is not thrown and false otherwise
+     */
     public static Supplier<Boolean> toastExceptions(FI.SafeRunnable runnable){
         return () -> toastExceptions(_ -> runnable.run()).test(0);
     }
+
+    /**
+     * takes a lambda that might throw rules exception and turns it into lambda that creates a toast on exception.
+     *
+     * @param runnable lambda that might throw RulesException
+     * @return lambda that runs the argument and toasts if exception is thrown 
+     */
     public static Runnable toastExceptionsIgnore(FI.SafeRunnable runnable){
         return () -> toastExceptions(runnable).get();
     }
 
+    /**
+     * @param runnable lambda to run on left click
+     * @return MouseAdapter that runs runnable when it gets left click
+     */
     public static MouseAdapter onLeftClick(Runnable runnable) {
         return new MouseAdapter() {
             @Override

@@ -3,6 +3,13 @@ import java.awt.*;
 import javax.swing.*;
 import javax.swing.text.*;
 
+/**
+ * A class that holds and displays whole lane on one typist.
+ * Lane includes their info on the left and passage with displayed progress.
+ *
+ * @author Adil Akylov
+ * @version 1.2
+ */
 public class JTypistLane extends JPanel{
     private final SwingTypist typist;
     private JTextPane track;
@@ -10,11 +17,25 @@ public class JTypistLane extends JPanel{
     private Style unwrittenStyle;
     private int lastProgress;
     private JTypistInfo info;
+
+    /**
+     * Constructor for objects of class JTypistLane.
+     * Creates a JPanel.
+     * 
+     * @param typist typist whose lane it will be
+     */
     public JTypistLane(SwingTypist typist){
         super();
         this.typist = typist;
         this.lastProgress = 0;
     }
+
+    /**
+     * places into JPanel info about the typist and the track with the passage
+     *
+     * @param passage passage that typist will compete with
+     * @return JPanel containing the whole lane
+     */
     public JPanel buildLane(String passage){
         this.info = new JTypistInfo(this.typist);
         this.add(this.info);
@@ -40,6 +61,9 @@ public class JTypistLane extends JPanel{
         return this.track;
     }
 
+    /**
+     * updates all info about the typist and their progress
+     */
     public void update(){
         this.info.update();
         this.updateTrackProgress();
@@ -47,8 +71,6 @@ public class JTypistLane extends JPanel{
 
     /**
      * updates the progress of typist to appear in the track with color and underlining.
-     *
-     * @param i index of a typist whose track to update
      */
     private void updateTrackProgress(){
         int progress = Math.min(this.track.getText().length(), this.typist.getProgress());

@@ -36,6 +36,12 @@ public class SwingTypist extends Typist {
         this.color = color;
     }
 
+    /**
+     * checks if object's fields arethe same as this typist
+     * 
+     * @param obj object to compare
+     * @return true if typist is equal
+     */
     @Override
     public boolean equals(Object obj){
         if (this == obj) return true;
@@ -45,6 +51,9 @@ public class SwingTypist extends Typist {
         return this.getColor().equals(other.getColor());
     }
 
+    /**
+     * @return hash of typist's name
+     */
     @Override
     public int hashCode() {
         return super.hashCode();

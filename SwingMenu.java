@@ -8,6 +8,12 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 
+/**
+ * Entry point for 
+ *
+ * @author Adil Akylov
+ * @version 1.2
+ */
 public class SwingMenu extends JPanel{
     /**
      * Rudimentary entry point for swing typing races. quick starts a sample race.

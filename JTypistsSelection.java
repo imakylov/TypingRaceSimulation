@@ -3,7 +3,17 @@ import java.util.ArrayList;
 import java.util.function.Predicate;
 import javax.swing.*;
 
+/**
+ * A class that holds and displays a place for selecting typists for any purposes.
+ * if list of typists is needed outside set onAdd to add to your list and same with onRemove.
+ *
+ * @author Adil Akylov
+ * @version 1.2
+ */
 public class JTypistsSelection extends JPanel {
+    /**
+     * @return default list of SwingTypists, //TODO might need to reconsider
+     */
     public static ArrayList<SwingTypist> defaultRotation(){
         ArrayList<SwingTypist> typists = new ArrayList<>();
         typists.add(new SwingTypist("TURBOFINGERS", 0.85, Color.RED));
@@ -16,67 +26,119 @@ public class JTypistsSelection extends JPanel {
         return typists;
     }
 
-    private final ArrayList<JTypistSelection> selections = new ArrayList<>();
+    private final ArrayList<JTypistOption> options = new ArrayList<>();
     private Predicate<SwingTypist> onAdd;
     private Predicate<SwingTypist> onRemove;
+
+    /**
+     * Constructor for objects of class JTypistsSelection.
+     * Creates a JPanel with JTypistOption for each typist and adds event listener to it to call onAdd or onRemove.
+     * 
+     * @param typists typist which will be available to choose from, if null defaultRotation will be
+     */
     public JTypistsSelection(ArrayList<SwingTypist> typists){
         super();
         if(typists == null) typists = defaultRotation();
         this.setLayout(new GridLayout(0, 1, 0, 10));
         for(SwingTypist typist : typists){
-            JTypistSelection selection = new JTypistSelection(typist);
-            selection.addMouseListener(Utils.onLeftClick(() -> toggle(selection)));
-            this.selections.add(selection);
-            this.add(selection);
+            JTypistOption option = new JTypistOption(typist);
+            option.addMouseListener(Utils.onLeftClick(() -> toggle(option)));
+            this.options.add(option);
+            this.add(option);
         }
     }
 
-    private JTypistSelection getSelection(SwingTypist typist){
-        for(JTypistSelection selection : this.selections){
-            if(selection.getTypist().equals(typist)){
-                return selection;
+    /**
+     * Gets JTypistOption object from the options based on typist. if not found null
+     * 
+     * @param typist typist to find amoung options
+     * @return JTypistOption corresponding to typist
+     */
+    private JTypistOption getOption(SwingTypist typist){
+        for(JTypistOption option : this.options){
+            if(option.getTypist().equals(typist)){
+                return option;
             }
         }return null;
     }
 
+    /**
+     * @param typist typist whose option to toggle
+     */
     public void toggle(SwingTypist typist){
-        this.toggle(getSelection(typist));
-    }
-    private void toggle(JTypistSelection selection){
-        if(selection.isSelected()){
-            this.unselect(selection);
-        }else this.select(selection);
-    }
-    private void select(JTypistSelection selection){
-        if(!this.onAdd.test(selection.getTypist())) return;
-        selection.select();
+        this.toggle(getOption(typist));
     }
 
-    private void unselect(JTypistSelection selection){
-        if(!this.onRemove.test(selection.getTypist())) return;
-        selection.unselect();
+    /**
+     * @param option option that needs to be toggled
+     */
+    private void toggle(JTypistOption option){
+        if(option.isSelected()){
+            this.unselect(option);
+        }else this.select(option);
     }
 
+    /**
+     * calls the custom callback onAdd. If it returns false, doesn't proceed. otherwise selects option
+     *
+     * @param option to toggle
+     */
+    private void select(JTypistOption option){
+        if(!this.onAdd.test(option.getTypist())) return;
+        option.select();
+    }
+
+    /**
+     * calls the custom callback onRemove. If it returns false, doesn't proceed. otherwise unselects option
+     *
+     * @param option
+     */
+    private void unselect(JTypistOption option){
+        if(!this.onRemove.test(option.getTypist())) return;
+        option.unselect();
+    }
+
+    /**
+     * unselects all options with calling onRemove on all of them
+     */
     public void unselectAll(){
-        for(JTypistSelection selection : this.selections){
-            if(selection.isSelected()) this.unselect(selection);
+        for(JTypistOption option : this.options){
+            if(option.isSelected()) this.unselect(option);
         }
     }
 
+    /**
+     * @param f lambda that is called when option is selected.
+     * false return is considered as failure, doesn't select
+    */
     public void onAdd(Predicate<SwingTypist> f){
         this.onAdd = f;
     }
+
+    /**
+     * @param f lambda that is called when option is unselected.
+     * false return is considered as failure, doesn't unselect
+    */
     public void onRemove(Predicate<SwingTypist> f){
         this.onRemove = f;
     }
 }
 
-class JTypistSelection extends JPanel {
+/**
+ * A class for holding and displaying option.
+ */
+class JTypistOption extends JPanel {
     private final SwingTypist typist;
     private boolean selected;
     private JLabel indicator;
 
-    public JTypistSelection(SwingTypist typist){
+    /**
+     * Constructor for objects of class JTypistOption.
+     * Creates a JPanel with pointing cursor. and an indicator that shows when option is selected
+     * 
+     * @param typists typist which will be associated with this option
+     */
+    public JTypistOption(SwingTypist typist){
         super();
         this.setLayout(new FlowLayout());
         this.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
@@ -89,6 +151,9 @@ class JTypistSelection extends JPanel {
         info.update();
     }
 
+    /**
+     * @return indicator for if option is selected
+     */
     private JPanel buildIndicator(){
         JPanel panel = new JPanel(new BorderLayout());
         this.indicator = new JLabel();
@@ -96,16 +161,31 @@ class JTypistSelection extends JPanel {
         return panel;
     }
 
+    /**
+     * @return typist this option represents
+     */
     public SwingTypist getTypist(){
         return this.typist;
     }
+
+    /**
+     * @return is option is selected
+     */
     public boolean isSelected(){
         return this.selected;
     }
+
+    /**
+     * Sets indicator and selected
+     */
     public void select(){
         indicator.setText("●");
         this.selected = true;
     }
+    
+    /**
+     * Sets indicator and selected
+     */
     public void unselect(){
         indicator.setText("");
         this.selected = false;

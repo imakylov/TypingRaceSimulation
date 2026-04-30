@@ -1,9 +1,9 @@
 import java.awt.FlowLayout;
 import java.util.ArrayList;
-
 import javax.swing.*;
 
 public class ToastManager {
+    private static ToastManager singleton = null;
     protected final JLayeredPane root;
     protected final ArrayList<Toast> toasts = new ArrayList<>();
     protected final Timer timer;
@@ -13,11 +13,22 @@ public class ToastManager {
     private int BOTTOM(){return this.START_HEIGHT() - Toast.SET_HEIGHT - GAP;}
     private int X(){return root.getWidth() - Toast.SET_WIDTH - GAP;}
 
-    public ToastManager(JLayeredPane root){
+    private ToastManager(JLayeredPane root){
         this.root = root;
-        this.timer = new Timer(16, e -> updateToasts());
+        this.timer = new Timer(1000 / Constants.FPS, e -> updateToasts());
         this.timer.start();
     }
+
+    public static ToastManager get(){
+        return ToastManager.singleton;
+    }
+
+    public static ToastManager init(JFrame frame){
+        if(ToastManager.singleton != null){
+            throw new RuntimeException ("trying to init Toast Manager second time");
+        }ToastManager.singleton = new ToastManager(frame.getLayeredPane());
+        return ToastManager.singleton;
+    } 
 
     protected void updateToasts(){
         removeFinished();
@@ -55,7 +66,7 @@ public class ToastManager {
         frame.setSize(900, 600);
         frame.setLayout(new FlowLayout());
 
-        ToastManager manager = new ToastManager(frame.getLayeredPane());
+        ToastManager manager = ToastManager.init(frame);
         
         JButton btn = new JButton("Show message");
         btn.addActionListener(e -> manager.push(new Toast("Message")));

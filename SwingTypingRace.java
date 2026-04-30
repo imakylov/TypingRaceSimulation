@@ -6,14 +6,16 @@ import javax.swing.*;
  * but with a swing interface.
  *
  * @author Adil Akylov
- * @version 1.1
+ * @version 1.2
  */
 public class SwingTypingRace extends TypingRace<SwingTypist> {
     private final String passage;
     private final JPanel viewRoot;
+    private JPanel tracksPanel = null;
     private JPanel controlPanel;
-    private JTypistLane[] lanes;
-    private boolean finilised;
+    private JTypistLane[] lanes = null;
+    private boolean finilised = false;
+    private Thread raceThread;
 
     @Override
     public int getMaxTypists(){return 6;}
@@ -28,12 +30,22 @@ public class SwingTypingRace extends TypingRace<SwingTypist> {
         super(passage.length());
         this.passage = passage;
         this.viewRoot = Utils.getBoxPanel(BoxLayout.Y_AXIS);
+        this.viewRoot.add(this.buildControlPanel());
         parent.add(this.viewRoot, "RACE");
-        this.finilised = false;
     }
 
     public void addButton(JButton btn){
         this.controlPanel.add(btn);
+    }
+
+    public void prepareForClose(){
+        this.viewRoot.remove(this.tracksPanel);
+        this.tracksPanel = null;
+        this.lanes = null;
+        this.finilised = false;
+        if(this.raceThread == null)return;
+        this.raceThread.interrupt();
+        this.raceThread = null;
     }
 
     /**
@@ -68,22 +80,17 @@ public class SwingTypingRace extends TypingRace<SwingTypist> {
         ToastManager.get().push(new Toast(message));
     }
 
-    /**
-     * builds the race layout including all tracks and typist infos
-     */
-    public JPanel buildLayout(){
-        this.prepareForRace();
-        this.viewRoot.add(this.buildControlPanel());
-        this.viewRoot.add(this.buildTypistLanes());
-        this.printRace();
-        return this.viewRoot;
-    }
-
     @Override
     public void startRace(){
-        if(!this.finilised)this.buildLayout();
+        if(!this.finilised)this.buildTypistLanes();
         this.raceThread = new Thread(Utils.toastExceptionsIgnore(() -> super.startRace()));
         this.raceThread.start();
+    }
+
+    public void prepareForOpen(){
+        this.viewRoot.add(this.buildTypistLanes());
+        this.prepareForRace();
+        this.printRace();
     }
 
     private JPanel buildControlPanel(){
@@ -94,7 +101,7 @@ public class SwingTypingRace extends TypingRace<SwingTypist> {
         return this.controlPanel;
     }
     private JPanel buildTypistLanes(){
-        JPanel tracksPanel = Utils.getBoxPanel(BoxLayout.Y_AXIS);
+        this.tracksPanel = Utils.getBoxPanel(BoxLayout.Y_AXIS);
         this.lanes = new JTypistLane[this.getSeatsTaken()];
         for(int i=0;i<this.getSeatsTaken();i++){
             this.lanes[i] = new JTypistLane(this.typists.get(i));
@@ -109,8 +116,9 @@ public class SwingTypingRace extends TypingRace<SwingTypist> {
      */
     @Override
     public void printRace(){
-        if(!this.finilised)this.buildLayout();
+        if(!this.finilised)this.buildTypistLanes();
         SwingUtilities.invokeLater(() -> {
+            if(!this.finilised)return;
             for(JTypistLane lane : this.lanes){
                 lane.update();
             }

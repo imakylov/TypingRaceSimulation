@@ -1,0 +1,95 @@
+import java.awt.CardLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.SwingUtilities;
+
+public class SwingMenu extends JPanel{
+    /**
+     * Rudimentary entry point for swing typing races. quick starts a sample race.
+     */
+    static JFrame frame;
+    static JPanel cardsPanel;
+    static CardLayout cardLayout;
+    static SwingTypingRace race;
+
+    private JPanel controlPanel;
+    private JTypistsSelection typistsSelection;
+
+    public SwingMenu(SwingTypingRace race){
+        super();
+        this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        this.add(this.buildControlPanel());
+        JPanel main = new JPanel(new FlowLayout());
+        this.add(main);
+        main.add(this.buildTypistsSelection());
+        main.add(this.buildPassageSelection());
+    }
+    
+    private JScrollPane buildTypistsSelection(){
+        this.typistsSelection = new JTypistsSelection(null);
+        this.typistsSelection.onAdd(Utils.toastExceptions(typist -> race.addTypist(typist)));
+        this.typistsSelection.onRemove(Utils.toastExceptions(typist -> race.removeTypist(typist)));
+        JScrollPane scrollPane = new JScrollPane(this.typistsSelection);
+        scrollPane.setPreferredSize(new Dimension(200, 250));
+        return scrollPane;
+    }
+
+    private JPanel buildPassageSelection(){
+        return new JPanel(); //TODO
+    }
+
+    private JPanel buildControlPanel(){
+        this.controlPanel = new JPanel(new FlowLayout());
+        
+        JButton startButton = new JButton("Start Race");
+        startButton.addActionListener(e -> cardLayout.show(cardsPanel, "RACE"));
+        startButton.addActionListener(e -> race.prepareForOpen());
+        this.controlPanel.add(startButton);
+
+        return this.controlPanel;
+    }
+
+    public static void main(String[] args) throws RulesException{
+        SwingUtilities.invokeLater(Utils.toastExceptionsIgnore(() -> {
+            setupFrame();
+            ToastManager.init(frame);
+            
+            cardLayout = new CardLayout();
+            cardsPanel = new JPanel(cardLayout);
+    
+            JPanel raceView = setupRace();
+            
+            cardsPanel.add(new SwingMenu(race), "MENU");
+            cardsPanel.add(raceView, "RACE");
+    
+            frame.add(cardsPanel); //TODO if breaks try setContentPane
+        }));
+    }
+    static void setupFrame(){
+        frame = new JFrame("Typing Race simulation");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(900, 600);
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
+    }
+    static JPanel setupRace() throws RulesException{
+        JPanel racePanel = new JPanel();
+        String passage = "The last man of Earth sat alone in a room. There was a knock on the door.";
+        // String passage = "In the rigor which is space, this spacesuit was designed by engineers to maintain your life in space, and can be called the smallest spaceship.";
+        race = new SwingTypingRace(passage, racePanel);
+        JButton backBtn = menuButton();
+        backBtn.addActionListener(e -> race.prepareForClose());
+        race.addButton(backBtn);
+        return racePanel;
+    }
+    public static JButton menuButton(){
+        JButton backBtn = new JButton("Back");
+        backBtn.addActionListener(e -> cardLayout.show(cardsPanel, "MENU"));
+        return backBtn;
+    }
+}

@@ -13,6 +13,8 @@ class Toast extends JPanel {
     private double opacity = 0f;
     public final long creationTime;
     private Color bg; 
+    private int type = 0;
+    private String message;
     
     // Constants can be tweaked
     static final double LERP_COEF = .1;
@@ -32,6 +34,7 @@ class Toast extends JPanel {
     public Toast(String message) {
         this.creationTime = System.currentTimeMillis();
         this.bg = null;
+        this.message = message;
         this.setSize(SET_WIDTH, SET_HEIGHT);
         this.setOpaque(false);
         this.setLayout(new BorderLayout());
@@ -86,6 +89,27 @@ class Toast extends JPanel {
     }
 
     /**
+     * @return message of this toast
+     */
+    public String getMessage(){
+        return this.message;
+    }
+
+    /**
+     * @param type numerical representation of type, eg 1 = bad, 2 = good
+     */
+    protected void setType(int type){
+        this.type = type;
+    }
+
+    /**
+     * @return type of the toast represented as an int, eg 1 = bad, 2 = good
+     */
+    public int getType(){
+        return this.type;
+    }
+
+    /**
      * @param color color to set background. Should only be called at creation
      */
     protected void setBG(Color color){
@@ -124,12 +148,24 @@ class Toast extends JPanel {
         super.paintComponent(g);
     }
 
+    public static Toast fromLog(String log){
+        int type = log.charAt(0) - '0';
+        String message = log.substring(1);
+        return switch (type) {
+            case 1 -> Toast.good(message);
+            case 2 -> Toast.bad(message);
+            case 3 -> Toast.system(message);
+            default -> new Toast(message);
+        };
+    }
+
     /**
      * @param message text that should be displayed in the toast
      * @return toast with with background of GOOD_COLOR
      */
     public static Toast good(String message){
         Toast toast = new Toast(message);
+        toast.setType(1);
         toast.setBG(Constants.GOOD_COLOR);
         return toast;
     }
@@ -140,6 +176,7 @@ class Toast extends JPanel {
      */
     public static Toast bad(String message){
         Toast toast = new Toast(message);
+        toast.setType(2);
         toast.setBG(Constants.BAD_COLOR);
         return toast;
     }
@@ -150,6 +187,7 @@ class Toast extends JPanel {
      */
     public static Toast system(String message){
         Toast toast = new Toast(message);
+        toast.setType(3);
         toast.setBG(Constants.SYSTEM_COLOR);
         return toast;
     }

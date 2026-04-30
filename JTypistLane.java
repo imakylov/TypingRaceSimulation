@@ -4,7 +4,7 @@ import javax.swing.*;
 import javax.swing.text.*;
 
 public class JTypistLane extends JPanel{
-    private SwingTypist typist;
+    private final SwingTypist typist;
     private JTextPane track;
     private Style writtenStyle;
     private Style unwrittenStyle;

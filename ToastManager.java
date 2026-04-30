@@ -13,6 +13,7 @@ public class ToastManager {
     protected final JLayeredPane root;
     protected final ArrayList<Toast> toasts = new ArrayList<>();
     protected final Timer timer;
+    protected final ArrayList<String> log = new ArrayList<>();
 
     // Constants, can be tweaked
     private final int GAP = 10;
@@ -92,6 +93,7 @@ public class ToastManager {
      * @param toast toast to add
      */
     public void push(Toast toast){
+        this.log.add(toast.getType() + toast.getMessage());
         toast.setLocation(this.X(), this.START_HEIGHT());
         this.root.add(toast, JLayeredPane.POPUP_LAYER);
         this.toasts.addFirst(toast);

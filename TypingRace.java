@@ -170,6 +170,14 @@ public class TypingRace<T extends Typist>
     }
 
     /**
+     * same as printMessage, can be used by subclasses to signify a negative message
+     * @param message the message to be printed
+     */
+    protected void printBadMessage(String message){
+        printMessage(message);
+    }
+
+    /**
      * same as printMessage, can be used by subclasses to signify a system message
      * @param message the message to be printed
      */

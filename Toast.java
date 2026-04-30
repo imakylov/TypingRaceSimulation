@@ -12,13 +12,14 @@ import javax.swing.*;
 class Toast extends JPanel {
     private double opacity = 0f;
     public final long creationTime;
+    private Color bg; 
     
     // Constants can be tweaked
     static final double LERP_COEF = .1;
     static final int SET_WIDTH = 200;
     static final int SET_HEIGHT = 100;
     static final int MS_TO_APPEAR = 500;
-    static final int MS_TO_START_DISAPPEARING = 2000;
+    static final double SEC_TO_START_DISAPPEARING = 6;
     static final int DISAPPEARING_HEIGHT = 50;
     static final int MS_TO_DISAPPEAR = 500;
 
@@ -30,6 +31,7 @@ class Toast extends JPanel {
      */
     public Toast(String message) {
         this.creationTime = System.currentTimeMillis();
+        this.bg = null;
         this.setSize(SET_WIDTH, SET_HEIGHT);
         this.setOpaque(false);
         this.setLayout(new BorderLayout());
@@ -46,7 +48,7 @@ class Toast extends JPanel {
      */
     public int getOffset(){
         long now = System.currentTimeMillis();
-        double disappearingProgress = (double)(now - this.creationTime - MS_TO_START_DISAPPEARING) / MS_TO_DISAPPEAR;
+        double disappearingProgress = (now - this.creationTime - 1000 * SEC_TO_START_DISAPPEARING) / MS_TO_DISAPPEAR;
         if(disappearingProgress < 0)return 0;
         return -(int)(disappearingProgress * DISAPPEARING_HEIGHT);
     }
@@ -55,7 +57,7 @@ class Toast extends JPanel {
      * @return true if toast has fully disappeared
      */
     public boolean isFinished(){
-        return Utils.isPast(this.creationTime + MS_TO_START_DISAPPEARING + MS_TO_DISAPPEAR);
+        return Utils.isPast(this.creationTime + (int)(1000 * SEC_TO_START_DISAPPEARING) + MS_TO_DISAPPEAR);
     }
 
     /**
@@ -64,8 +66,8 @@ class Toast extends JPanel {
     public void updateOpacity(){
         if(this.isFinished()){
             this.setOpacity(0);
-        }else if(Utils.isPast(this.creationTime + MS_TO_START_DISAPPEARING)){
-            this.setOpacity(1 - (double)(Utils.now() - this.creationTime - MS_TO_START_DISAPPEARING) / MS_TO_DISAPPEAR);
+        }else if(Utils.isPast(this.creationTime + (int)(1000 * SEC_TO_START_DISAPPEARING))){
+            this.setOpacity(1 - (Utils.now() - this.creationTime - 1000 * SEC_TO_START_DISAPPEARING) / MS_TO_DISAPPEAR);
         }else if(Utils.isPast(this.creationTime + MS_TO_APPEAR)){
             this.setOpacity(1);
         }else{
@@ -84,9 +86,17 @@ class Toast extends JPanel {
     }
 
     /**
-     * @return background color of toast. Will be overriden for subclasses
+     * @param color color to set background. Should only be called at creation
      */
-    protected Color bg(){
+    protected void setBG(Color color){
+        this.bg = color;
+    }
+
+    /**
+     * @return background color of toast. can only be set at creation with Toast.good, bad, etc.
+     */
+    protected Color getBG(){
+        if(this.bg != null) return this.bg;
         return new Color(80, 150, 220);
     }
 
@@ -107,55 +117,40 @@ class Toast extends JPanel {
         g2.setComposite(AlphaComposite.getInstance(
             AlphaComposite.SRC_OVER, (float)this.opacity));
 
-        g2.setColor(this.bg());
+        g2.setColor(this.getBG());
         g2.fillRoundRect(0, 0, getWidth(), getHeight(), 15, 15);
 
         g2.dispose();
         super.paintComponent(g);
     }
-}
 
-/**
- * A class to represent Bad Toast messages.
- *
- * @author Adil Akylov
- * @version 1.2
- */
-class BadToast extends Toast {
-    public BadToast(String message) {
-        super(message);
+    /**
+     * @param message text that should be displayed in the toast
+     * @return toast with with background of GOOD_COLOR
+     */
+    public static Toast good(String message){
+        Toast toast = new Toast(message);
+        toast.setBG(Constants.GOOD_COLOR);
+        return toast;
     }
-    protected Color bg(){
-        return new Color(255, 100, 100);
-    }
-}
 
-/**
- * A class to represent Good Toast messages.
- *
- * @author Adil Akylov
- * @version 1.2
- */
-class GoodToast extends Toast {
-    public GoodToast(String message) {
-        super(message);
+    /**
+     * @param message text that should be displayed in the toast
+     * @return toast with with background of BAD_COLOR
+     */
+    public static Toast bad(String message){
+        Toast toast = new Toast(message);
+        toast.setBG(Constants.BAD_COLOR);
+        return toast;
     }
-    protected Color bg(){
-        return new Color(50, 200, 100);
-    }
-}
 
-/**
- * A class to represent System Toast messages.
- *
- * @author Adil Akylov
- * @version 1.2
- */
-class SystemToast extends Toast {
-    public SystemToast(String message) {
-        super(message);
-    }
-    protected Color bg(){
-        return new Color(240, 240, 100);
+    /**
+     * @param message text that should be displayed in the toast
+     * @return toast with with background of SYSTEM_COLOR
+     */
+    public static Toast system(String message){
+        Toast toast = new Toast(message);
+        toast.setBG(Constants.SYSTEM_COLOR);
+        return toast;
     }
 }

@@ -1,9 +1,5 @@
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.util.Arrays;
+import java.awt.*;
 import javax.swing.*;
-import javax.swing.text.*;
 
 /**
  * An extension of TypingRace that only holds SwingTypist typists. A maximum of 6 typists race using the same logic as in TypingRace,
@@ -14,12 +10,10 @@ import javax.swing.text.*;
  */
 public class SwingTypingRace extends TypingRace<SwingTypist> {
     private final String passage;
-    private final JFrame frame;
-    private JTextPane[] tracks;
-    private Style[] writtenStyles;
-    private Style[] unwrittenStyles;
-    private int[] lastProgresses;
-    private JLabel[] accuracies;
+    private final JPanel viewRoot;
+    private JPanel controlPanel;
+    private JTypistLane[] lanes;
+    private boolean finilised;
 
     @Override
     public int getMaxTypists(){return 6;}
@@ -29,82 +23,105 @@ public class SwingTypingRace extends TypingRace<SwingTypist> {
      *
      * @param passage the passage that the typists will compete for
      */
-    public SwingTypingRace(String passage){
+    public SwingTypingRace(String passage, JComponent parent){
         if(passage == null)passage = "";
         super(passage.length());
         this.passage = passage;
-        this.frame = new JFrame("Typing Race Simulation");
-        this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.frame.setSize(FRAME_WIDTH, FRAME_HEIGHT);
+        this.viewRoot = Utils.getBoxPanel(BoxLayout.Y_AXIS);
+        parent.add(this.viewRoot, "RACE");
+        this.finilised = false;
     }
 
-    private void prepareFields(){
-        this.finilised = true;
-        this.tracks = new JTextPane[this.getSeatsTaken()];
-        this.accuracies = new JLabel[this.getSeatsTaken()];
-        this.lastProgresses = new int[this.getSeatsTaken()];
-        this.writtenStyles = new Style[this.getSeatsTaken()];
-        this.unwrittenStyles = new Style[this.getSeatsTaken()];
-        Arrays.fill(this.lastProgresses, 0);
+    public void addButton(JButton btn){
+        this.controlPanel.add(btn);
+    }
+
+    /**
+     * @param message the message to be pushed in a bad toast
+    */
+    @Override
+    protected void printBadMessage(String message){
+        ToastManager.get().push(Toast.bad(message));
+    }
+
+    /**
+     * @param message the message to be pushed in a good toast
+    */
+    @Override
+    protected void printGoodMessage(String message){
+        ToastManager.get().push(Toast.good(message));
+    }
+
+    /**
+     * @param message the message to be pushed in a system toast
+    */
+    @Override
+    protected void printSystemMessage(String message){
+        ToastManager.get().push(Toast.system(message));
+    }
+
+    /**
+     * @param message the message to be pushed in a toast
+     */
+    @Override
+    protected void printMessage(String message){
+        ToastManager.get().push(new Toast(message));
     }
 
     /**
      * builds the race layout including all tracks and typist infos
      */
-    public void buildLayout(){
-        this.prepareFields();
-        JPanel tracksPanel = new JPanel(new FlowLayout());
+    public JPanel buildLayout(){
+        this.prepareForRace();
+        this.viewRoot.add(this.buildControlPanel());
+        this.viewRoot.add(this.buildTypistLanes());
+        this.printRace();
+        return this.viewRoot;
+    }
+
+    @Override
+    public void startRace(){
+        if(!this.finilised)this.buildLayout();
+        new Thread(() -> {
+            try {
+                super.startRace();
+            } catch (RulesException ex) {
+                if(ex.fatal) this.printBadMessage(ex.message);
+                else this.printSystemMessage(ex.message);
+            }
+            this.finilised = false;
+        }).start();
+    }
+
+    private JPanel buildControlPanel(){
+        this.controlPanel = new JPanel(new FlowLayout());
+        JButton startBtn = new JButton("Start race");
+        startBtn.addActionListener(ev -> this.startRace());
+        this.controlPanel.add(startBtn);
+        return this.controlPanel;
+    }
+    private JPanel buildTypistLanes(){
+        JPanel tracksPanel = Utils.getBoxPanel(BoxLayout.Y_AXIS);
+        this.lanes = new JTypistLane[this.getSeatsTaken()];
         for(int i=0;i<this.getSeatsTaken();i++){
-            tracksPanel.add(this.buildTypistLane(i));
-        }this.printRace();
-        this.frame.add(tracksPanel);
-        this.frame.setVisible(true);
-    }
-    
-    private JPanel buildTypistLane(int i){
-        JPanel typistPanel = new JPanel();
-        typistPanel.add(this.buildTypistInfoPanel(i));
-        typistPanel.add(buildTrack(i));
-        return typistPanel;
-    }
-
-    private JPanel buildTypistInfoPanel(int i){
-        JPanel infoPanel = new JPanel();
-        JLabel typistLabel = new JLabel(this.typists.get(i).getName());
-        this.accuracies[i] = new JLabel();
-        infoPanel.add(typistLabel);
-        infoPanel.add(this.accuracies[i]);
-        return infoPanel;
-    }
-
-    /**
-     * creates a JTextPane object that has appropriate styling for a typing race track
-     *
-     * @return empty JTextPane with track styling
-     */
-    private JTextPane buildTrack(int i){
-        this.tracks[i] = new JTextPane();
-        this.tracks[i].setFont(new Font("Monospace", 1, 15));
-        this.tracks[i].setMaximumSize(new Dimension(500, 60));
-        this.tracks[i].setEditable(false);
-        this.writtenStyles[i] = this.tracks[i].addStyle("written", null);
-        this.unwrittenStyles[i] = this.tracks[i].addStyle("unwritten", null);
-        StyleConstants.setForeground(this.writtenStyles[i], Constants.COLORS[i]);
-        StyleConstants.setUnderline(this.writtenStyles[i], true);
-        this.tracks[i].setText(Utils.breakWords(this.passage, 60));
-        return this.tracks[i];
+            this.lanes[i] = new JTypistLane(this.typists.get(i));
+            tracksPanel.add(this.lanes[i].buildLane(this.passage));
+        }this.finilised = true;
+        return tracksPanel;
     }
 
     /**
      * renders the current state of the race on tracks and user infos.
+     * Uses invokeLater to move all ui work to ui thread.
      */
     @Override
     public void printRace(){
         if(!this.finilised)this.buildLayout();
-        for(int i=0;i<this.getSeatsTaken();i++){
-            this.renderTrackProgress(i);
-            this.renderAccuracy(i);
-        }
+        SwingUtilities.invokeLater(() -> {
+            for(JTypistLane lane : this.lanes){
+                lane.update();
+            }
+        });
     }
 
     @Override
@@ -117,51 +134,5 @@ public class SwingTypingRace extends TypingRace<SwingTypist> {
     public void removeTypist(SwingTypist typist) throws RulesException{
         if(this.finilised)throw new RulesException("seats cannot be changed after race is started", false);
         super.removeTypist(typist);
-    }
-
-    @Override
-    protected void prepareForRace(){
-        super.prepareForRace();
-        if(!this.finilised)this.buildLayout();
-    }
-    
-    /**
-     * renders current accuracy to the typist info with the given index
-     *
-     * @param i index of a typist whose accuracy to update
-     */
-    private void renderAccuracy(int i){
-        this.accuracies[i].setText("Accuracy: " + (int)(100*this.typists.get(i).getAccuracy()) + "%");
-    }
-
-    /**
-     * updates the progress of typist to appear in the track with color and underlining.
-     *
-     * @param i index of a typist whose track to update
-     */
-    private void renderTrackProgress(int i){
-        int progress = Math.min(this.passageLength, this.typists.get(i).getProgress());
-        if(this.lastProgresses[i] == progress)return;
-        StyledDocument doc = this.tracks[i].getStyledDocument();
-        int startOfChange = Math.min(progress, this.lastProgresses[i]);
-        int lengthToChange = Math.abs(progress - this.lastProgresses[i]);
-        Style styleToChange = this.lastProgresses[i] < progress ? writtenStyles[i] : unwrittenStyles[i];
-        doc.setCharacterAttributes(startOfChange, lengthToChange, styleToChange, true);
-        this.lastProgresses[i] = progress;
-    }
-
-    /**
-     * Rudimentary entry point for swing typing races. quick starts a sample race.
-     */
-    public static void main(String[] args) throws RulesException{
-        String passage;
-        passage = "The last man of Earth sat alone in a room. There was a knock on the door.";
-        passage = "In the rigor which is space, this spacesuit was designed by engineers to maintain your life in space, and can be called the smallest spaceship.";
-        final SwingTypingRace race = new SwingTypingRace(passage);
-        race.addTypist(new SwingTypist("TURBOFINGERS", 0.85));
-        race.addTypist(new SwingTypist("QWERTY_QUEEN",  0.60));
-        race.addTypist(new SwingTypist("HUNT_N_PECK",   0.30));
-        race.buildLayout();
-        race.startRace();
     }
 }

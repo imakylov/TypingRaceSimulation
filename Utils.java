@@ -6,7 +6,7 @@ import javax.swing.JTextArea;
  * A class that holds static methods and constants useful for different purposes.
  *
  * @author Adil Akylov
- * @version 1.1
+ * @version 1.2
  */
 public class Utils {
     /**
@@ -36,14 +36,26 @@ public class Utils {
         return result;
     }
 
+    /**
+     * Creates a JPanel with BoxLayout on the set axis
+     *
+     * @param axis a static constant from BoxLayout like BoxLayout.X_AXIS or Y_AXIS
+     * @return JPanel with BoxLayout layout manager
+     */
     public static JPanel getBoxPanel(int axis){
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, axis));
         return panel;
     }
 
-    public static JTextArea getSeemlessTextArea(String message){
-        JTextArea area = new JTextArea(message);
+    /**
+     * Creates JTextArea that looks like a static JLabel, but breakes text properly into words
+     *
+     * @param text text that should be in the JTextArea
+     * @return the static JTextArea
+     */
+    public static JTextArea getSeemlessTextArea(String text){
+        JTextArea area = new JTextArea(text);
         area.setLineWrap(true);
         area.setWrapStyleWord(true);
         area.setEditable(false);
@@ -52,10 +64,19 @@ public class Utils {
         return area;
     }
 
+    /**
+     * @return current time in Milliseconds from System
+     */
     public static long now(){
         return System.currentTimeMillis();
     }
 
+    /**
+     * Checks if given time in ms is before current time
+     *
+     * @param timeInMS time to compare to now
+     * @return true if the time given has already passed
+     */
     public static boolean isPast(long timeInMS){
         return timeInMS < Utils.now();
     }

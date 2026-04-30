@@ -2,27 +2,48 @@ import java.awt.FlowLayout;
 import java.util.ArrayList;
 import javax.swing.*;
 
+/**
+ * A singleton class that manages all Toast messages. Toasts appear on Pop up layer of JLayeredPane.
+ * Has to be supplied frame with ToastManager.init and then singleton can be accessed with ToastManager.get
+ *
+ * @author Adil Akylov
+ * @version 1.2
+ */
 public class ToastManager {
     private static ToastManager singleton = null;
     protected final JLayeredPane root;
     protected final ArrayList<Toast> toasts = new ArrayList<>();
     protected final Timer timer;
 
+    // Constants, can be tweaked
     private final int GAP = 10;
     private int START_HEIGHT(){return this.root.getHeight();}
     private int BOTTOM(){return this.START_HEIGHT() - Toast.SET_HEIGHT - GAP;}
     private int X(){return root.getWidth() - Toast.SET_WIDTH - GAP;}
 
+    /**
+     * Constructor for objects of class ToastManager. Starts timer to update toasts each frame.
+     * Should only be called once from ToastManager.init.
+     *
+     * @param root JLayeredPane of JFrame
+     */
     private ToastManager(JLayeredPane root){
         this.root = root;
         this.timer = new Timer(1000 / Constants.FPS, e -> updateToasts());
         this.timer.start();
     }
 
+    /**
+     * @return singleton instance of ToastManager
+     */
     public static ToastManager get(){
         return ToastManager.singleton;
     }
 
+    /**
+     * @param frame frame where to place toasts on JLayeredPane
+     * @return singleton instance of ToastManager
+     */
     public static ToastManager init(JFrame frame){
         if(ToastManager.singleton != null){
             throw new RuntimeException ("trying to init Toast Manager second time");
@@ -30,19 +51,31 @@ public class ToastManager {
         return ToastManager.singleton;
     } 
 
+    /**
+     * Updates animation and removes all inactive toasts.
+     */
     protected void updateToasts(){
         removeFinished();
         for(int i=0;i<this.toasts.size();i++){
             Toast toast = this.toasts.get(i);
-            toast.lerpToY(this.getOffset(i) + toast.getOffset());
+            toast.lerpToY(this.getYOfToast(i) + toast.getOffset());
             toast.updateOpacity();
         }
     }
 
-    private int getOffset(int i){
+    /**
+     * Gets offset of a specific toast
+     *
+     * @param i index of the toast starting from bottom
+     * @return target Y based on the index of the toast
+     */
+    private int getYOfToast(int i){
         return this.BOTTOM() - i * (Toast.SET_HEIGHT + GAP);
     }
 
+    /**
+     * Removes all toasts that finished their dissapearing animation and repaints JLayeredPane.
+     */
     private void removeFinished(){
         ArrayList<Toast> toRemove = new ArrayList<>();
         for(Toast toast : this.toasts){
@@ -55,32 +88,13 @@ public class ToastManager {
         }if(!toRemove.isEmpty()) this.root.repaint();
     }
 
+    /**
+     * Add a toast to messages queue
+     * @param toast toast to add
+     */
     public void push(Toast toast){
-        toast.setBounds(this.X(), this.START_HEIGHT());
+        toast.setLocation(this.X(), this.START_HEIGHT());
         this.root.add(toast, JLayeredPane.POPUP_LAYER);
         this.toasts.addFirst(toast);
-    }
-    public static void main(String[] args) {
-        JFrame frame = new JFrame("Toast Test");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(900, 600);
-        frame.setLayout(new FlowLayout());
-
-        ToastManager manager = ToastManager.init(frame);
-        
-        JTextField input = new JTextField(40);
-        frame.add(input);
-
-        JButton btn = new JButton("Show message");
-        btn.addActionListener(e -> manager.push(new Toast(input.getText())));
-        JButton goodBtn = new JButton("Show good message");
-        goodBtn.addActionListener(e -> manager.push(new GoodToast(input.getText())));
-        JButton badBtn = new JButton("Show bad message");
-        badBtn.addActionListener(e -> manager.push(new BadToast(input.getText())));
-
-        frame.add(btn);
-        frame.add(goodBtn);
-        frame.add(badBtn);
-        frame.setVisible(true);
     }
 }

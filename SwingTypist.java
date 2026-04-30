@@ -5,7 +5,7 @@ import java.awt.Color;
  * An extension of Typist that is used for swing typing races.
  *
  * @author Adil Akylov
- * @version 1.1
+ * @version 1.2
  */
 public class SwingTypist extends Typist {
     private Color color;
@@ -34,5 +34,19 @@ public class SwingTypist extends Typist {
      */
     public void setColor(Color color){
         this.color = color;
+    }
+
+    @Override
+    public boolean equals(Object obj){
+        if (this == obj) return true;
+        if (!(obj instanceof SwingTypist)) return false;
+        SwingTypist other = (SwingTypist) obj;
+        if(!super.equals(other))return false;
+        return this.getColor().equals(other.getColor());
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
     }
 }

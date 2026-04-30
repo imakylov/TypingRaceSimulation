@@ -9,24 +9,17 @@ public class JTypistLane extends JPanel{
     private Style writtenStyle;
     private Style unwrittenStyle;
     private int lastProgress;
-    private JLabel accuracy;
+    private JTypistInfo info;
     public JTypistLane(SwingTypist typist){
         super();
         this.typist = typist;
         this.lastProgress = 0;
     }
     public JPanel buildLane(String passage){
-        this.add(this.buildInfo());
+        this.info = new JTypistInfo(this.typist);
+        this.add(this.info);
         this.add(this.buildTrack(passage));
         return this;
-    }
-    public JPanel buildInfo(){
-        JPanel infoPanel = new JPanel();
-        JLabel typistLabel = new JLabel(this.typist.getName());
-        this.accuracy = new JLabel();
-        infoPanel.add(typistLabel);
-        infoPanel.add(this.accuracy);
-        return infoPanel;
     }
 
     /**
@@ -48,17 +41,8 @@ public class JTypistLane extends JPanel{
     }
 
     public void update(){
-        this.updateAccuracy();
+        this.info.update();
         this.updateTrackProgress();
-    }
-
-    /**
-     * renders current accuracy to the typist info with the given index
-     *
-     * @param i index of a typist whose accuracy to update
-     */
-    private void updateAccuracy(){
-        this.accuracy.setText("Accuracy: " + (int)(100*this.typist.getAccuracy()) + "%");
     }
 
     /**

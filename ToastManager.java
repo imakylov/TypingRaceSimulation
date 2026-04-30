@@ -98,4 +98,12 @@ public class ToastManager {
         this.root.add(toast, JLayeredPane.POPUP_LAYER);
         this.toasts.addFirst(toast);
     }
+
+    /**
+     * Add a toast to messages queue based on the rules exception
+     * @param ex rules exception to push
+     */
+    public void push(RulesException ex){
+        this.push(ex.fatal ? Toast.bad(ex.message) : Toast.system(ex.message));
+    }
 }

@@ -6,14 +6,13 @@ import java.util.concurrent.TimeUnit;
  * advancing character by character, sliding backwards when they mistype or burning out if they push too hard.
  *
  * @author Adil Akylov
- * @version 1.1
+ * @version 1.2
  */
 public class TypingRace<T extends Typist>
 {
     protected int passageLength;
     private int steps_since_start;
     protected ArrayList<T> typists;
-    protected int seatsTaken;
     
     public int getMaxTypists(){return 3;}
     public int getStepDurationMS(){return 200;}
@@ -28,7 +27,6 @@ public class TypingRace<T extends Typist>
      */
     public TypingRace(int passageLength){
         this.typists = new ArrayList<>();
-        this.seatsTaken = 0;
         this.steps_since_start = 0;
         this.passageLength = passageLength;
     }
@@ -47,7 +45,7 @@ public class TypingRace<T extends Typist>
      * @throws RulesException throws exception if trying to add past typist limit
      */
     public void addTypist(T typist) throws RulesException{
-        if(this.seatsTaken >= this.getMaxTypists()){
+        if(this.getSeatsTaken() >= this.getMaxTypists()){
             throw new RulesException("trying to add typists past limit", false);
         }
         this.typists.add(typist);
@@ -81,6 +79,9 @@ public class TypingRace<T extends Typist>
 
     protected void prepareForRace(){
         this.steps_since_start = 0;
+        for(Typist typist : this.typists){
+            typist.resetToStart();
+        }
     }
     
     /**

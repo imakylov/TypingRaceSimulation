@@ -9,12 +9,12 @@ import javax.swing.*;
  * @author Adil Akylov
  * @version 1.2
  */
-class Toast extends JPanel {
+public class Toast extends JPanel {
     private double opacity = 0f;
     public final long creationTime;
     private Color bg; 
     private int type = 0;
-    private String message;
+    private final String message;
     
     // Constants can be tweaked
     static final double LERP_COEF = .1;
@@ -32,12 +32,12 @@ class Toast extends JPanel {
      * @param message text that should be displayed in the toast
      */
     public Toast(String message) {
+        super(new BorderLayout());
         this.creationTime = System.currentTimeMillis();
         this.bg = null;
         this.message = message;
         this.setSize(SET_WIDTH, SET_HEIGHT);
         this.setOpaque(false);
-        this.setLayout(new BorderLayout());
 
         this.setBorder(BorderFactory.createEmptyBorder(10, 15, 10, 15));
         this.add(Utils.getSeemlessTextArea(message));

@@ -1,3 +1,5 @@
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
@@ -79,5 +81,23 @@ public class Utils {
      */
     public static boolean isPast(long timeInMS){
         return timeInMS < Utils.now();
+    }
+
+    public static <T> Predicate<T> toastExceptions(FI.SafeConsumer<T> consumer){
+        return t -> {
+            try{
+                consumer.accept(t);
+            }catch (RulesException e){
+                ToastManager.get().push(e);
+                return false;
+            }
+            return true;
+        };
+    }
+    public static Supplier<Boolean> toastExceptions(FI.SafeRunnable runnable){
+        return () -> toastExceptions(_ -> runnable.run()).test(0);
+    }
+    public static Runnable toastExceptionsIgnore(FI.SafeRunnable runnable){
+        return () -> toastExceptions(runnable).get();
     }
 }

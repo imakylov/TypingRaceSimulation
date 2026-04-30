@@ -11,6 +11,7 @@ public class JTypistLane extends JPanel{
     private int lastProgress;
     private JLabel accuracy;
     public JTypistLane(SwingTypist typist){
+        super();
         this.typist = typist;
         this.lastProgress = 0;
     }

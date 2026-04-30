@@ -82,15 +82,8 @@ public class SwingTypingRace extends TypingRace<SwingTypist> {
     @Override
     public void startRace(){
         if(!this.finilised)this.buildLayout();
-        new Thread(() -> {
-            try {
-                super.startRace();
-            } catch (RulesException ex) {
-                if(ex.fatal) this.printBadMessage(ex.message);
-                else this.printSystemMessage(ex.message);
-            }
-            this.finilised = false;
-        }).start();
+        this.raceThread = new Thread(Utils.toastExceptionsIgnore(() -> super.startRace()));
+        this.raceThread.start();
     }
 
     private JPanel buildControlPanel(){

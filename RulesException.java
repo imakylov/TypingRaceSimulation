@@ -3,7 +3,7 @@
  * Logging and displaying it to the user is handled at the highest method of the stack.
  *
  * @author Adil Akylov
- * @version 1.1
+ * @version 1.2
  */
 public class RulesException extends Exception{
     public final String message;
@@ -15,6 +15,7 @@ public class RulesException extends Exception{
      * @param message the reason for the RulesException.
      */
     public RulesException(String message, boolean fatal){
+        super(message);
         this.message = message;
         this.fatal = fatal;
     }

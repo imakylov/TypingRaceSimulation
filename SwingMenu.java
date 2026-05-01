@@ -87,6 +87,9 @@ public class SwingMenu extends JPanel{
         });
         startButton.addActionListener(e -> cardLayout.show(cardsPanel, "RACE"));
         this.controlPanel.add(startButton);
+        JButton editTypistsButton = new JButton("Edit Typists");
+        editTypistsButton.addActionListener(e -> cardLayout.show(cardsPanel, "EDIT"));
+        this.controlPanel.add(editTypistsButton);
 
         return this.controlPanel;
     }

@@ -26,6 +26,19 @@ public class FI {
 
     public static <T> Predicate<T> True(){return t -> true;}
 
+    public static <T, E extends RuntimeException> T convertToRules(Class<E> exceptionType, Supplier<T> supplier) throws RulesException{
+        try {
+            return supplier.get();
+        } catch (RuntimeException e) {
+            if(!exceptionType.isInstance(e)) throw e;
+            else throw new RulesException(e.getMessage(), false);
+        }
+    }
+
+    public static <T> T ruleNumberFormat(Supplier<T> supplier) throws RulesException{
+        return convertToRules(NumberFormatException.class, supplier);
+    }
+
     /**
      * takes a lambda that might throw rules exception and turns it into lambda that creates a toast
      * and returns false if RulesException is called.

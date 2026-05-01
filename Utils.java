@@ -1,7 +1,5 @@
+import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.util.function.*;
 import javax.swing.*;
 
 
@@ -22,7 +20,7 @@ public class Utils {
      */
     public static String breakWords(String passage, int limit){
         String result = "";
-        String[] words = passage.split(" ");
+        String[] words = passage.split(" |\n");
         if(words.length > 0) result = words[0];
         if(words.length < 2) return result;
         int curCol = words[0].length();
@@ -87,59 +85,9 @@ public class Utils {
         return timeInMS < Utils.now();
     }
 
-    /**
-     * takes a lambda that might throw rules exception and turns it into lambda that creates a toast
-     * and returns false if RulesException is called.
-     *
-     * @param <T> input to consumer
-     * @param consumer lambda that takes t argument and might throw RulesException
-     * @return lambda that returns true if exception is not thrown and false otherwise
-     */
-    public static <T> Predicate<T> toastExceptions(FI.SafeConsumer<T> consumer){
-        return t -> {
-            try{
-                consumer.accept(t);
-            }catch (RulesException e){
-                ToastManager.get().push(e);
-                return false;
-            }
-            return true;
-        };
-    }
-
-    /**
-     * takes a lambda that might throw rules exception and turns it into lambda that creates a toast
-     * and returns false if RulesException is called.
-     *
-     * @param runnable lambda that might throw RulesException
-     * @return lambda that returns true if exception is not thrown and false otherwise
-     */
-    public static Supplier<Boolean> toastExceptions(FI.SafeRunnable runnable){
-        return () -> toastExceptions(_ -> runnable.run()).test(0);
-    }
-
-    /**
-     * takes a lambda that might throw rules exception and turns it into lambda that creates a toast on exception.
-     *
-     * @param runnable lambda that might throw RulesException
-     * @return lambda that runs the argument and toasts if exception is thrown 
-     */
-    public static Runnable toastExceptionsIgnore(FI.SafeRunnable runnable){
-        return () -> toastExceptions(runnable).get();
-    }
-
-    /**
-     * @param runnable lambda to run on left click
-     * @return MouseAdapter that runs runnable when it gets left click
-     */
-    public static MouseAdapter onLeftClick(Runnable runnable) {
-        return new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-                if(SwingUtilities.isLeftMouseButton(e)){
-                    runnable.run();
-                }
-            } 
-        };
+    public static void setStableSize(JComponent component, int width, int height){
+        component.setMinimumSize(new Dimension(width, height));
+        component.setPreferredSize(new Dimension(width, height));
+        component.setMaximumSize(new Dimension(width, height));
     }
 }

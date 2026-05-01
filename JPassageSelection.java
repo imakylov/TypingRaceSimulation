@@ -1,5 +1,4 @@
 
-import java.awt.Dimension;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import javax.swing.JScrollPane;
@@ -41,13 +40,13 @@ public class JPassageSelection extends JSingleSelection<String, JScrollPane> {
 class JPassageOption extends JMyOption<String, JScrollPane>{
     private JTextArea textArea;
     @Override
-    int getMaxHeight() {return 60;}
+    int getMaxHeight() {return 70;}
     
     @Override
     JScrollPane buildValue(String passage, int width) {
         this.textArea = Utils.getSeemlessTextArea(Utils.breakWords(passage, 50));
         JScrollPane pane = new JScrollPane(this.textArea);
-        pane.setMaximumSize(new Dimension(width, this.getMaxHeight()));
+        Utils.setStableSize(pane, width, this.getMaxHeight());
         return pane;
     }
 

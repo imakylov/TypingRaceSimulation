@@ -69,7 +69,7 @@ public class SwingTypingRace extends TypingRace<SwingTypist> {
     @Override
     public void startRace(){
         if(!this.finilised)this.buildTypistLanes();
-        this.raceThread = new Thread(Utils.toastExceptionsIgnore(() -> super.startRace()));
+        this.raceThread = new Thread(FI.toastExceptionsIgnore(() -> super.startRace()));
         this.raceThread.start();
     }
 

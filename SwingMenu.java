@@ -39,8 +39,8 @@ public class SwingMenu extends JPanel{
     
     private JScrollPane buildTypistSelection(){
         JTypistSelection typistSelection = new JTypistSelection(null);
-        typistSelection.onAdd(Utils.toastExceptions(typist -> race.addTypist(typist)));
-        typistSelection.onRemove(Utils.toastExceptions(typist -> race.removeTypist(typist)));
+        typistSelection.onAdd(FI.toastExceptions(typist -> race.addTypist(typist)));
+        typistSelection.onRemove(FI.toastExceptions(typist -> race.removeTypist(typist)));
         JScrollPane scrollPane = new JScrollPane(typistSelection);
         scrollPane.setPreferredSize(new Dimension(200, 250));
         return scrollPane;
@@ -70,7 +70,7 @@ public class SwingMenu extends JPanel{
     }
 
     public static void main(String[] args) throws RulesException{
-        SwingUtilities.invokeLater(Utils.toastExceptionsIgnore(() -> {
+        SwingUtilities.invokeLater(FI.toastExceptionsIgnore(() -> {
             setupFrame();
             ToastManager.init(frame);
             

@@ -5,7 +5,7 @@ import javax.swing.*;
 /**
  * A class for holding and displaying option.
  */
-abstract class JMyOption<T, C extends JComponent> extends JPanel {
+abstract public class JMyOption<T, C extends JComponent> extends JPanel {
     private final T value;
     private final C rep;
     private boolean selected;

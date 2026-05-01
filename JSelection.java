@@ -39,7 +39,7 @@ abstract public class JSelection<T, C extends JComponent> extends JPanel {
     private void buildOptions(ArrayList<T> optionsValues){
         for(T optionValue : optionsValues){
             JMyOption<T, C> option = this.buildOption(optionValue);
-            option.addMouseListener(Utils.onLeftClick(() -> toggle(option)));
+            option.addMouseListener(FI.onLeftClick(() -> toggle(option)));
             this.options.add(option);
             this.add(option);
         }

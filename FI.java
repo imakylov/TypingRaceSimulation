@@ -1,4 +1,6 @@
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.function.Predicate;
@@ -14,11 +16,11 @@ import javax.swing.SwingUtilities;
 
 public class FI {
     @FunctionalInterface
-    public static interface SafeConsumer<T> {
+    public static interface UnsafeConsumer<T> {
         void accept(T t) throws RulesException;
     }
     @FunctionalInterface
-    public static interface SafeRunnable {
+    public static interface UnsafeRunnable {
         void run() throws RulesException;
     }
 
@@ -32,7 +34,7 @@ public class FI {
      * @param consumer lambda that takes t argument and might throw RulesException
      * @return lambda that returns true if exception is not thrown and false otherwise
     */
-    public static <T> Predicate<T> toastExceptions(SafeConsumer<T> consumer){
+    public static <T> Predicate<T> toastExceptions(UnsafeConsumer<T> consumer){
         return t -> {
             try{
                 consumer.accept(t);
@@ -51,7 +53,7 @@ public class FI {
      * @param runnable lambda that might throw RulesException
      * @return lambda that returns true if exception is not thrown and false otherwise
     */
-    public static Supplier<Boolean> toastExceptions(SafeRunnable runnable){
+    public static Supplier<Boolean> toastExceptions(UnsafeRunnable runnable){
         return () -> toastExceptions(_ -> runnable.run()).test(0);
     }
 
@@ -61,7 +63,7 @@ public class FI {
      * @param runnable lambda that might throw RulesException
      * @return lambda that runs the argument and toasts if exception is thrown 
     */
-    public static Runnable toastExceptionsIgnore(SafeRunnable runnable){
+    public static Runnable toastExceptionsIgnore(UnsafeRunnable runnable){
         return () -> toastExceptions(runnable).get();
     }
 
@@ -78,5 +80,13 @@ public class FI {
                 }
             }
         };
+    }
+
+    /**
+     * @param runnable lambda to run on left click
+     * @return MouseAdapter that runs runnable when it gets left click
+    */
+    public static ActionListener toastExceptionsAction(UnsafeConsumer<ActionEvent> consumer) {
+        return ev -> toastExceptions(consumer).test(ev);
     }
 }

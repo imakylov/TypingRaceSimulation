@@ -10,7 +10,7 @@ import java.util.Objects;
 public class Typist
 {
     private char typistSymbol;
-    final String typistName;
+    private String typistName;
     private String specialPostfix;
 
     private double typistAccuracy;
@@ -252,6 +252,16 @@ public class Typist
     public void setSymbol(char newSymbol)
     {
         this.typistSymbol = newSymbol;
+    }
+
+    /**
+     * Sets the named of this typist.
+     *
+     * @param newName the new name of the typist
+     */
+    public void setName(String newName)
+    {
+        this.typistName = newName;
     }
 
     /**

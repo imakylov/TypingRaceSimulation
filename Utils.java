@@ -1,3 +1,4 @@
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import javax.swing.*;
@@ -66,6 +67,10 @@ public class Utils {
         area.setFocusable(false);
         area.setFont(new Font("Monospace", 1, 15));
         return area;
+    }
+
+    public static Color randomColor(){
+        return new Color((int)(Math.random()*255), (int)(Math.random()*255), (int)(Math.random()*255));
     }
 
     /**

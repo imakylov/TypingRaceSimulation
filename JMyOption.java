@@ -16,7 +16,7 @@ abstract class JMyOption<T, C extends JComponent> extends JPanel {
      * @param value value to be represented by component
      * @return component to represent the value
      */
-    abstract C buildValue(T value);
+    abstract C buildValue(T value, int width);
 
     /**
      * Constructor for objects of class JMyOption.
@@ -24,16 +24,18 @@ abstract class JMyOption<T, C extends JComponent> extends JPanel {
      * 
      * @param value value which will be associated with this option
      */
-    public JMyOption(T value){
+    public JMyOption(T value, int width){
         super();
-        this.setLayout(new FlowLayout());
+        this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         this.setMaximumSize(new Dimension(Integer.MAX_VALUE, this.getMaxHeight()));
+        this.setPreferredSize(new Dimension(width+50, this.getMaxHeight()));
         this.value = value;
         this.selected = false;
         this.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         this.add(this.buildIndicator());
-        this.rep = this.buildValue(value);
+        this.rep = this.buildValue(value, width);
         this.add(this.rep);
+        this.rep.setMaximumSize(new Dimension(width, Integer.MAX_VALUE));
     }
 
     /**
@@ -52,8 +54,9 @@ abstract class JMyOption<T, C extends JComponent> extends JPanel {
      */
     private JPanel buildIndicator(){
         JPanel panel = new JPanel(new BorderLayout());
-        this.indicator = new JLabel();
-        panel.add(this.indicator, SwingConstants.CENTER);
+        panel.setMaximumSize(new Dimension(30, 30));
+        this.indicator = new JLabel("", SwingConstants.CENTER);
+        panel.add(this.indicator);
         return panel;
     }
 

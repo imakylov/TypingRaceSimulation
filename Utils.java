@@ -1,3 +1,4 @@
+import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.function.*;
@@ -65,6 +66,7 @@ public class Utils {
         area.setBorder(null);
         area.setHighlighter(null);
         area.setFocusable(false);
+        area.setFont(new Font("Monospace", 1, 15));
         return area;
     }
 

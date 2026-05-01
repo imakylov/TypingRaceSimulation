@@ -1,5 +1,8 @@
 
+import java.awt.Dimension;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 /**
@@ -9,7 +12,7 @@ import javax.swing.JTextArea;
  * @author Adil Akylov
  * @version 1.2
  */
-public class JPassageSelection extends JSingleSelection<String, JTextArea> {
+public class JPassageSelection extends JSingleSelection<String, JScrollPane> {
     /**
      * @return default list of SwingTypists
     */
@@ -17,11 +20,10 @@ public class JPassageSelection extends JSingleSelection<String, JTextArea> {
         ArrayList<String> passages = new ArrayList<>();
         passages.add("The last man of Earth sat alone in a room. There was a knock on the door.");
         passages.add("In the rigor which is space, this spacesuit was designed by engineers to maintain your life in space, and can be called the smallest spaceship.");
-        // passages.add("");
-        // passages.add("");
-        // passages.add("");
-        // passages.add("");
-        // passages.add("");
+        passages.add("When you become untouchable you're unable to touch.");
+        passages.add("As a child, I considered such unknowns sinister. Now, though, I understand they bear no ill will. The universe is, and we are.");
+        passages.add("The right man in the wrong place can make all the difference in the world. So, wake up, Mister Freeman. Wake up and... smell the ashes...");
+        passages.add("It is sad to think people are no longer learning how to use the colon and semicolon, not least because, in this supreme QWERTY keyboard era, the little finger of the human right hand, deprived of its traditional function, may eventually dwindle and drop off from disuse.");
         return passages;
     }
 
@@ -31,21 +33,31 @@ public class JPassageSelection extends JSingleSelection<String, JTextArea> {
     }
 
     @Override
-    JMyOption<String, JTextArea> buildOption(String passage) {
+    JMyOption<String, JScrollPane> buildOption(String passage) {
         return new JPassageOption(passage);
     }
 }
 
-class JPassageOption extends JMyOption<String, JTextArea>{
+class JPassageOption extends JMyOption<String, JScrollPane>{
+    private JTextArea textArea;
     @Override
     int getMaxHeight() {return 60;}
     
     @Override
-    JTextArea buildValue(String passage) {
-        return Utils.getSeemlessTextArea(Utils.breakWords(passage, 60));
+    JScrollPane buildValue(String passage, int width) {
+        this.textArea = Utils.getSeemlessTextArea(Utils.breakWords(passage, 50));
+        JScrollPane pane = new JScrollPane(this.textArea);
+        pane.setMaximumSize(new Dimension(width, this.getMaxHeight()));
+        return pane;
     }
 
     public JPassageOption(String passage){
-        super(passage);
+        super(passage, 500);
+    }
+
+    @Override
+    public void addMouseListener(MouseListener l){
+        super.addMouseListener(l);
+        this.textArea.addMouseListener(l);
     }
 }

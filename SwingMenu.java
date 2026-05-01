@@ -1,6 +1,7 @@
 import java.awt.CardLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -24,34 +25,42 @@ public class SwingMenu extends JPanel{
     static SwingTypingRace race;
 
     private JPanel controlPanel;
-    private JTypistsSelection typistsSelection;
 
     public SwingMenu(SwingTypingRace race){
         super();
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         this.add(this.buildControlPanel());
-        JPanel main = new JPanel(new FlowLayout());
+        JPanel main = Utils.getBoxPanel(BoxLayout.X_AXIS);
+        main.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
         this.add(main);
-        main.add(this.buildTypistsSelection());
-        main.add(this.buildPassageSelection());
+        main.add(this.buildTypistSelection());
+        main.add(this.buildPassagePanel());
     }
     
-    private JScrollPane buildTypistsSelection(){
-        this.typistsSelection = new JTypistsSelection(null);
-        this.typistsSelection.onAdd(Utils.toastExceptions(typist -> race.addTypist(typist)));
-        this.typistsSelection.onRemove(Utils.toastExceptions(typist -> race.removeTypist(typist)));
-        JScrollPane scrollPane = new JScrollPane(this.typistsSelection);
+    private JScrollPane buildTypistSelection(){
+        JTypistSelection typistSelection = new JTypistSelection(null);
+        typistSelection.onAdd(Utils.toastExceptions(typist -> race.addTypist(typist)));
+        typistSelection.onRemove(Utils.toastExceptions(typist -> race.removeTypist(typist)));
+        JScrollPane scrollPane = new JScrollPane(typistSelection);
         scrollPane.setPreferredSize(new Dimension(200, 250));
         return scrollPane;
     }
 
-    private JPanel buildPassageSelection(){
-        return new JPanel(); //TODO
+    private JPanel buildPassagePanel(){
+        JPanel passagePanel = Utils.getBoxPanel(BoxLayout.Y_AXIS);
+        JPassageSelection passageSelection = new JPassageSelection(null);
+        // passageSelection.
+        // JTextField passageInput = new JTextField("", 60);
+        // passageSelection.onAdd();
+        passagePanel.add(passageSelection);
+        return passagePanel;
     }
 
     private JPanel buildControlPanel(){
         this.controlPanel = new JPanel(new FlowLayout());
-        
+        this.controlPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        this.controlPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 200));
+
         JButton startButton = new JButton("Start Race");
         startButton.addActionListener(e -> cardLayout.show(cardsPanel, "RACE"));
         startButton.addActionListener(e -> race.prepareForOpen());
@@ -73,7 +82,7 @@ public class SwingMenu extends JPanel{
             cardsPanel.add(new SwingMenu(race), "MENU");
             cardsPanel.add(raceView, "RACE");
     
-            frame.add(cardsPanel); //TODO if breaks try setContentPane
+            frame.add(cardsPanel);
         }));
     }
     static void setupFrame(){

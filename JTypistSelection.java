@@ -8,7 +8,7 @@ import java.util.ArrayList;
  * @author Adil Akylov
  * @version 1.2
  */
-public class JTypistsSelection extends JSelection<SwingTypist, JTypistInfo> {
+public class JTypistSelection extends JSelection<SwingTypist, JTypistInfo> {
     /**
      * @return default list of SwingTypists
     */
@@ -34,13 +34,13 @@ public class JTypistsSelection extends JSelection<SwingTypist, JTypistInfo> {
     }
 
     /**
-     * Constructor for objects of class JTypistsSelection.
+     * Constructor for objects of class JTypistSelection.
      * Creates a JPanel with JTypistOption for each typist and adds event listener to it to call onAdd or onRemove.
      * 
      * @param typists typist which will be available to choose from, if null defaultRotation will be
      */
-    public JTypistsSelection(ArrayList<SwingTypist> typists) {
-        if(typists == null) typists = JTypistsSelection.defaultRotation();
+    public JTypistSelection(ArrayList<SwingTypist> typists) {
+        if(typists == null) typists = JTypistSelection.defaultRotation();
         super(typists);
     }
 }
@@ -57,8 +57,9 @@ class JTypistOption extends JMyOption<SwingTypist, JTypistInfo>{
      * @return JTypistInfo object to represent the value
      */
     @Override
-    JTypistInfo buildValue(SwingTypist typist) {
+    JTypistInfo buildValue(SwingTypist typist, int width) {
         JTypistInfo info = new JTypistInfo(typist);
+        info.setMinimumSize(new Dimension(width, 0));
         info.update();
         return info;
     }
@@ -69,5 +70,5 @@ class JTypistOption extends JMyOption<SwingTypist, JTypistInfo>{
      * 
      * @param value value which will be associated with this option
      */
-    public JTypistOption(SwingTypist value){super(value);}
+    public JTypistOption(SwingTypist value){super(value, 100);}
 }

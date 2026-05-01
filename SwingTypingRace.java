@@ -25,20 +25,13 @@ public class SwingTypingRace extends TypingRace<SwingTypist> {
      *
      * @param passage the passage that the typists will compete for
      */
-    public SwingTypingRace(String passage, JComponent parent){
+    public SwingTypingRace(String passage, JComponent parent, JButton backBtn){
         if(passage == null)passage = "";
         super(passage.length());
         this.passage = passage;
         this.viewRoot = Utils.getBoxPanel(BoxLayout.Y_AXIS);
-        this.viewRoot.add(this.buildControlPanel());
+        this.viewRoot.add(this.buildControlPanel(backBtn));
         parent.add(this.viewRoot, "RACE");
-    }
-
-    /**
-     * @param btn button to add to the control panel
-     */
-    public void addButton(JButton btn){
-        this.controlPanel.add(btn);
     }
 
     /**
@@ -74,13 +67,14 @@ public class SwingTypingRace extends TypingRace<SwingTypist> {
     }
 
     /**
-     * @return JPanel holding control panel with one already set button to start race
+     * @return JPanel holding control panel with buttons like start race or go back.
      */
-    private JPanel buildControlPanel(){
+    private JPanel buildControlPanel(JButton backBtn){
         this.controlPanel = new JPanel(new FlowLayout());
         JButton startBtn = new JButton("Start race");
         startBtn.addActionListener(e -> this.startRace());
         this.controlPanel.add(startBtn);
+        this.controlPanel.add(backBtn);
         return this.controlPanel;
     }
 

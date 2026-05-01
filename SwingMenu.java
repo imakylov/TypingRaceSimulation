@@ -103,6 +103,7 @@ public class SwingMenu extends JPanel{
             
             cardsPanel.add(new SwingMenu(race), "MENU");
             cardsPanel.add(raceView, "RACE");
+            cardsPanel.add(new TypistEditingView(menuButton()), "EDIT");
     
             frame.add(cardsPanel);
         }));
@@ -116,10 +117,9 @@ public class SwingMenu extends JPanel{
     }
     static JPanel setupRace() throws RulesException{
         JPanel racePanel = new JPanel();
-        race = new SwingTypingRace("", racePanel);
         JButton backBtn = menuButton();
+        race = new SwingTypingRace("", racePanel, backBtn);
         backBtn.addActionListener(e -> race.prepareForClose());
-        race.addButton(backBtn);
         return racePanel;
     }
     public static JButton menuButton(){

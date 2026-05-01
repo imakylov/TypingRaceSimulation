@@ -14,6 +14,7 @@ import javax.swing.*;
  */
 abstract public class JSelection<T, C extends JComponent, O extends JMyOption<T, C>> extends JPanel {
     protected final ArrayList<O> options = new ArrayList<>();
+    private final boolean multiselect;
     protected ArrayList<T> values;
     protected Predicate<T> onAdd = t -> true;
     protected Predicate<T> onRemove = t -> true;
@@ -29,13 +30,15 @@ abstract public class JSelection<T, C extends JComponent, O extends JMyOption<T,
      * Constructor for objects of class JSelection.
      * Creates a JPanel with JOption for each value given and adds event listener to it to call onAdd or onRemove.
      *
-     * @param optionsValues values which will be available to choose from
+     * @param values values which will be available to choose from
+     * @param multiselect true if multiple options can be selected at once. default is true
      */
-    public JSelection(ArrayList<T> values){
+    public JSelection(ArrayList<T> values, boolean multiselect){
         super();
         this.setLayout(new GridLayout(0, 1, 0, 10));
         this.values = values;
         this.buildOptions();
+        this.multiselect = multiselect;
     }
 
     /**
@@ -94,6 +97,7 @@ abstract public class JSelection<T, C extends JComponent, O extends JMyOption<T,
      */
     protected void select(O option){
         if(!this.onAdd.test(option.getValue())) return;
+        if(!this.multiselect) this.unselectAll();
         option.select();
     }
 

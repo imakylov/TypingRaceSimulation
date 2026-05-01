@@ -37,11 +37,12 @@ public class JTypistSelection extends JSelection<SwingTypist, JTypistInfo, JTypi
      * Constructor for objects of class JTypistSelection.
      * Creates a JPanel with JTypistOption for each typist and adds event listener to it to call onAdd or onRemove.
      * 
-     * @param typists typist which will be available to choose from, if null defaultRotation will be
+     * @param typists typist which will be available to choose from, if null gets all typists
+     * @param multiselect true if multiple options can be selected at once
      */
-    public JTypistSelection(ArrayList<SwingTypist> typists) {
-        if(typists == null) typists = JTypistSelection.defaultRotation();
-        super(typists);
+    public JTypistSelection(ArrayList<SwingTypist> typists, boolean multiselect) {
+        if(typists == null) typists = SwingTypist.getAll();
+        super(typists, multiselect);
     }
 }
 

@@ -11,7 +11,7 @@ import javax.swing.JTextArea;
  * @author Adil Akylov
  * @version 1.2
  */
-public class JPassageSelection extends JSingleSelection<String, JScrollPane, JPassageOption> {
+public class JPassageSelection extends JSelection<String, JScrollPane, JPassageOption> {
     /**
      * @return default list of SwingTypists
     */
@@ -26,9 +26,9 @@ public class JPassageSelection extends JSingleSelection<String, JScrollPane, JPa
         return passages;
     }
 
-    public JPassageSelection(ArrayList<String> passages) {
+    public JPassageSelection(ArrayList<String> passages, boolean multiselect) {
         if(passages == null) passages = defaultRotation();
-        super(passages);
+        super(passages, multiselect);
     }
 
     @Override

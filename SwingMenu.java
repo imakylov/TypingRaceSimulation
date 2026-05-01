@@ -38,6 +38,30 @@ public class SwingMenu extends JPanel{
         this.add(main);
         main.add(this.buildTypistSelection());
         main.add(this.buildPassagePanel());
+        main.add(this.buildModifierSelection());
+    }
+
+    private JPanel buildControlPanel(){
+        this.controlPanel = new JPanel(new FlowLayout());
+        this.controlPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        this.controlPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 200));
+
+        JButton startButton = new JButton("Start Race");
+        startButton.addActionListener(ev -> {
+            try {
+                race.setPassage(this.passageInput.getText());
+            } catch (RulesException ex) {
+                ToastManager.get().push(ex);
+            }
+            race.prepareForOpen();
+        });
+        startButton.addActionListener(e -> cardLayout.show(cardsPanel, "RACE"));
+        this.controlPanel.add(startButton);
+        JButton editTypistsButton = new JButton("Edit Typists");
+        editTypistsButton.addActionListener(e -> cardLayout.show(cardsPanel, "EDIT"));
+        this.controlPanel.add(editTypistsButton);
+
+        return this.controlPanel;
     }
     
     private JScrollPane buildTypistSelection(){
@@ -70,28 +94,23 @@ public class SwingMenu extends JPanel{
         passagePanel.add(scrollPane);
         return passagePanel;
     }
-
-    private JPanel buildControlPanel(){
-        this.controlPanel = new JPanel(new FlowLayout());
-        this.controlPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-        this.controlPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 200));
-
-        JButton startButton = new JButton("Start Race");
-        startButton.addActionListener(ev -> {
-            try {
-                race.setPassage(this.passageInput.getText());
-            } catch (RulesException ex) {
-                ToastManager.get().push(ex);
-            }
-            race.prepareForOpen();
-        });
-        startButton.addActionListener(e -> cardLayout.show(cardsPanel, "RACE"));
-        this.controlPanel.add(startButton);
-        JButton editTypistsButton = new JButton("Edit Typists");
-        editTypistsButton.addActionListener(e -> cardLayout.show(cardsPanel, "EDIT"));
-        this.controlPanel.add(editTypistsButton);
-
-        return this.controlPanel;
+    
+    private JPanel buildModifierSelection(){
+        JModifierSelection modifierSelection = new JModifierSelection();
+        modifierSelection.onAdd(modifier -> {switch (modifier){
+            case "Autocorrect" -> race.setIsAutocorrect(true);
+            case "Caffeine Mode" -> race.setIsCaffeine(true);
+            case "Night Shift" -> race.setIsNight(true);
+        }});
+        modifierSelection.onRemove(modifier -> {switch (modifier){
+            case "Autocorrect" -> race.setIsAutocorrect(false);
+            case "Caffeine Mode" -> race.setIsCaffeine(false);
+            case "Night Shift" -> race.setIsNight(false);
+        }});
+        // JPanel container = new JPanel(); //TODO
+        // container.add(modifierSelection);
+        // container.setPreferredSize(new Dimension(200, 250));
+        return modifierSelection;
     }
 
     public static void main(String[] args) throws RulesException{

@@ -32,8 +32,8 @@ public class JPassageSelection extends JSingleSelection<String, JScrollPane> {
     }
 
     @Override
-    JMyOption<String, JScrollPane> buildOption(String passage) {
-        return new JPassageOption(passage);
+    protected JPassageOption buildOption(String passage) {
+        return JPassageOption.makeOption(passage);
     }
 }
 
@@ -50,8 +50,12 @@ class JPassageOption extends JMyOption<String, JScrollPane>{
         return pane;
     }
 
-    public JPassageOption(String passage){
+    private JPassageOption(String passage){
         super(passage, 500);
+    }
+
+    public static JPassageOption makeOption(String passage){
+        return JMyOption.makeOption(() -> new JPassageOption(passage));
     }
 
     @Override

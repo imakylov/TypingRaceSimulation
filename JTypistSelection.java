@@ -29,8 +29,8 @@ public class JTypistSelection extends JSelection<SwingTypist, JTypistInfo> {
      * @return Option with given typist
      */
     @Override
-    JTypistOption buildOption(SwingTypist typist) {
-        return new JTypistOption(typist);
+    protected JTypistOption buildOption(SwingTypist typist) {
+        return JTypistOption.makeOption(typist);
     }
 
     /**
@@ -68,7 +68,13 @@ class JTypistOption extends JMyOption<SwingTypist, JTypistInfo>{
      * Constructor for objects of class JTypistOption.
      * Creates a JPanel with pointing cursor. and an indicator that shows when option is selected
      * 
-     * @param value value which will be associated with this option
+     * @param typist typist which will be associated with this option
      */
-    public JTypistOption(SwingTypist value){super(value, 100);}
+    private JTypistOption(SwingTypist typist){
+        super(typist, 100);
+    }
+
+    public static JTypistOption makeOption(SwingTypist typist){
+        return JMyOption.makeOption(() -> new JTypistOption(typist));
+    }
 }

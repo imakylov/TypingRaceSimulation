@@ -1,13 +1,15 @@
 import java.awt.*;
 import java.awt.event.MouseListener;
+import java.util.function.Supplier;
 import javax.swing.*;
 
 /**
  * A class for holding and displaying option.
  */
 abstract public class JMyOption<T, C extends JComponent> extends JPanel {
-    private final T value;
-    private final C rep;
+    protected final T value;
+    protected final int width;
+    protected C rep;
     private boolean selected;
     private JLabel indicator;
 
@@ -24,18 +26,24 @@ abstract public class JMyOption<T, C extends JComponent> extends JPanel {
      * 
      * @param value value which will be associated with this option
      */
-    public JMyOption(T value, int width){
+    protected JMyOption(T value, int width){
         super();
         this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
-        this.setMaximumSize(new Dimension(Integer.MAX_VALUE, this.getMaxHeight()));
-        this.setPreferredSize(new Dimension(width+50, this.getMaxHeight()));
         this.value = value;
+        this.width = width;
         this.selected = false;
         this.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         this.add(this.buildIndicator());
-        this.rep = this.buildValue(value, width);
-        this.add(this.rep);
-        this.rep.setMaximumSize(new Dimension(width, Integer.MAX_VALUE));
+    }
+    
+    protected static <T, C extends JComponent, O extends JMyOption<T, C>> O makeOption(Supplier<O> constructor){
+        O option = constructor.get();
+        option.setMaximumSize(new Dimension(Integer.MAX_VALUE, option.getMaxHeight()));
+        option.setPreferredSize(new Dimension(option.width+50, option.getMaxHeight()));
+        option.rep = option.buildValue(option.value, option.width);
+        option.add(option.rep);
+        option.rep.setMaximumSize(new Dimension(option.width, Integer.MAX_VALUE));
+        return option;
     }
 
     /**

@@ -18,6 +18,7 @@ public class JTypistLane extends JPanel{
     private int lastProgress;
     private JTypistInfo info;
     private final JLabel WPM = new JLabel();
+    private final JLabel isBurnout = new JLabel();
     private final JLabel burnoutCount = new JLabel();
     private final JLabel mistypePercentage = new JLabel();
 
@@ -52,6 +53,7 @@ public class JTypistLane extends JPanel{
         statistics.add(this.WPM);
         statistics.add(this.burnoutCount);
         statistics.add(this.mistypePercentage);
+        statistics.add(this.isBurnout);
         Utils.setStableSize(statistics, 210, 100);
         return statistics;
     }
@@ -83,6 +85,7 @@ public class JTypistLane extends JPanel{
         this.WPM.setText("Current WPM: " + wpm);
         this.burnoutCount.setText("Burned out " + this.typist.getBurnoutCount() + " times");
         this.mistypePercentage.setText("Current mistype percentage: " + this.typist.getMistypePercentage() + "%");
+        this.isBurnout.setText(this.typist.isBurntOut() ? "Burned out!" : "");
     }
 
     /**

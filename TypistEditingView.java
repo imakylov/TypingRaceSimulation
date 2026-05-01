@@ -61,6 +61,7 @@ public class TypistEditingView extends JPanel {
         this.selection.onRemoveAll(() -> this.unselect());
         JScrollPane scrollPane = new JScrollPane(this.selection);
         scrollPane.setPreferredSize(new Dimension(200, 250));
+        scrollPane.setHorizontalScrollBar(null);
         return scrollPane;
     }
 

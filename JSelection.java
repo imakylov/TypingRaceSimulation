@@ -80,7 +80,7 @@ abstract public class JSelection<T, C extends JComponent> extends JPanel {
      *
      * @param option to select
      */
-    private void select(JMyOption<T, C> option){
+    protected void select(JMyOption<T, C> option){
         if(!this.onAdd.test(option.getValue())) return;
         option.select();
     }
@@ -90,7 +90,7 @@ abstract public class JSelection<T, C extends JComponent> extends JPanel {
      *
      * @param option to unselect
      */
-    private void unselect(JMyOption<T, C> option){
+    protected void unselect(JMyOption<T, C> option){
         if(!this.onRemove.test(option.getValue())) return;
         option.unselect();
     }

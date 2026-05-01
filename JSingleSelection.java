@@ -18,7 +18,8 @@ abstract public class JSingleSelection<T, C extends JComponent> extends JSelecti
      *
      * @param option to select
      */
-    private void select(JMyOption<T, C> option){
+    @Override
+    protected void select(JMyOption<T, C> option){
         if(!this.onAdd.test(option.getValue())) return;
         this.unselectAll();
         option.select();

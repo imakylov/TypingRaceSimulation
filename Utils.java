@@ -63,6 +63,8 @@ public class Utils {
         area.setEditable(false);
         area.setOpaque(false);
         area.setBorder(null);
+        area.setHighlighter(null);
+        area.setFocusable(false);
         return area;
     }
 

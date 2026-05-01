@@ -9,8 +9,8 @@ import javax.swing.*;
  * @version 1.2
  */
 public class SwingTypingRace extends TypingRace<SwingTypist> {
-    private final String passage;
     private final JPanel viewRoot;
+    private String passage;
     private JPanel tracksPanel = null;
     private JPanel controlPanel;
     private JTypistLane[] lanes = null;
@@ -111,6 +111,16 @@ public class SwingTypingRace extends TypingRace<SwingTypist> {
                 lane.update();
             }
         });
+    }
+
+    @Override
+    public int getPassageLength(){
+        return this.passage.length();
+    }
+
+    public void setPassage(String passage) throws RulesException{
+        if(this.finilised)throw new RulesException("Cannot change passage while race is running", false);
+        this.passage = passage;
     }
 
     /**

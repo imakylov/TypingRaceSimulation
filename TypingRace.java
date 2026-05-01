@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class TypingRace<T extends Typist>
 {
-    protected int passageLength;
+    private final int passageLength;
     private int steps_since_start;
     protected ArrayList<T> typists;
     
@@ -29,6 +29,13 @@ public class TypingRace<T extends Typist>
         this.typists = new ArrayList<>();
         this.steps_since_start = 0;
         this.passageLength = passageLength;
+    }
+
+    /**
+     * @return length of the passage
+     */
+    public int getPassageLength(){
+        return this.passageLength;
     }
 
     /**
@@ -72,7 +79,7 @@ public class TypingRace<T extends Typist>
         if(this.getSeatsTaken() < 2){
             return new RulesException("Not enough people for a race", false);
         }
-        if(this.passageLength == 0){
+        if(this.getPassageLength() == 0){
             return new RulesException("Passage is not set", false);
         }return null;
     }
@@ -201,7 +208,7 @@ public class TypingRace<T extends Typist>
      * @return true if their progress has reached or passed the passage length
      */
     protected boolean raceFinishedBy(T typist){
-        return typist != null && typist.getProgress() >= passageLength;
+        return typist != null && typist.getProgress() >= getPassageLength();
     }
 
     /**
@@ -212,15 +219,15 @@ public class TypingRace<T extends Typist>
     public void printRace(){
         System.out.print('\u000C'); // Clear terminal
 
-        System.out.println("  TYPING RACE — passage length: " + passageLength + " chars");
-        multiplePrint('=', passageLength + 3);
+        System.out.println("  TYPING RACE — passage length: " + getPassageLength() + " chars");
+        multiplePrint('=', this.getPassageLength() + 3);
         System.out.println();
 
         for(T typist : this.typists){
             printSeat(typist);
         }
 
-        multiplePrint('=', passageLength + 3);
+        multiplePrint('=', getPassageLength() + 3);
         System.out.println();
         System.out.println("  ~ = burnt out    [<] = just mistyped");
     }
@@ -237,7 +244,7 @@ public class TypingRace<T extends Typist>
     protected void printSeat(T typist){
         if(typist == null)return;
         int spacesBefore = typist.getProgress();
-        int spacesAfter  = passageLength - typist.getProgress();
+        int spacesAfter  = getPassageLength() - typist.getProgress();
 
         System.out.print('|');
         multiplePrint(' ', spacesBefore);

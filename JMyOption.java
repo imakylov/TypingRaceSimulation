@@ -56,6 +56,7 @@ abstract public class JMyOption<T, C extends JComponent> extends JPanel {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setMaximumSize(new Dimension(30, 30));
         this.indicator = new JLabel("", SwingConstants.CENTER);
+        this.indicator.setForeground(Color.GREEN);
         panel.add(this.indicator);
         return panel;
     }
@@ -78,7 +79,7 @@ abstract public class JMyOption<T, C extends JComponent> extends JPanel {
      * Sets indicator and selected
      */
     public void select(){
-        indicator.setText("●");
+        this.indicator.setText("●");
         this.selected = true;
     }
 
@@ -86,7 +87,7 @@ abstract public class JMyOption<T, C extends JComponent> extends JPanel {
      * Sets indicator and selected
      */
     public void unselect(){
-        indicator.setText("");
+        this.indicator.setText("");
         this.selected = false;
     }
 }

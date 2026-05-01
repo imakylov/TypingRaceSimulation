@@ -41,7 +41,7 @@ public class SwingMenu extends JPanel{
     }
     
     private JScrollPane buildTypistSelection(){
-        JTypistSelection typistSelection = new JTypistSelection(null);
+        JTypistSelection typistSelection = JTypistSelection.fromAll(true);
         typistSelection.onTryAdd(FI.toastExceptions(typist -> race.addTypist(typist)));
         typistSelection.onTryRemove(FI.toastExceptions(typist -> race.removeTypist(typist)));
         JScrollPane scrollPane = new JScrollPane(typistSelection);
@@ -60,7 +60,7 @@ public class SwingMenu extends JPanel{
         inputPane.setBorder(BorderFactory.createEmptyBorder(10, 0, 20, 20));
 
         passagePanel.add(inputPane);
-        JPassageSelection passageSelection = new JPassageSelection(null);
+        JPassageSelection passageSelection = new JPassageSelection(null, false);
         passageSelection.onAdd(p -> this.passageInput.setText(p));
         passageSelection.onRemove(p -> {
             if(this.passageInput.getText().equals(p))this.passageInput.setText("");

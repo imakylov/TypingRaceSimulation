@@ -30,6 +30,44 @@ public class JTypistSelection extends JSelection<SwingTypist, JTypistInfo, JTypi
         if(typists == null) typists = SwingTypist.getAll();
         super(typists, multiselect);
     }
+
+    public static JTypistSelection fromAll(boolean multiselect){
+        JTypistSelection selection = new JTypistSelection(null, multiselect);
+        globalSelections.add(selection);
+        return selection;
+    }
+
+    @Override
+    public void removeOption(SwingTypist typist){
+        if(!SwingTypist.getAll().remove(typist)) return;
+        if(globalSelections.contains(this)){
+            for(JTypistSelection selection : globalSelections) selection.removeOptionHere(typist);
+        }else this.removeOptionHere(typist);
+    }
+
+    private void removeOptionHere(SwingTypist typist){
+        super.removeOption(typist);
+    }
+
+    @Override
+    public void addOption(SwingTypist typist){
+        if(globalSelections.contains(this)){
+            for(JTypistSelection selection : globalSelections) selection.addOptionHere(typist);
+        }else this.addOptionHere(typist);
+    }
+
+    private void addOptionHere(SwingTypist typist){
+        super.addOption(typist);
+    }
+
+    public void updateMe(){
+        for(JTypistOption option : this.options){
+            option.update();
+        }
+    }
+    public static void updateAll(){
+        for(JTypistSelection selection : globalSelections) selection.updateMe();
+    }
 }
 
 /**
@@ -63,5 +101,9 @@ class JTypistOption extends JMyOption<SwingTypist, JTypistInfo>{
 
     public static JTypistOption makeOption(SwingTypist typist){
         return JMyOption.makeOption(() -> new JTypistOption(typist));
+    }
+
+    public void update(){
+        this.rep.update();
     }
 }

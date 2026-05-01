@@ -49,6 +49,11 @@ abstract public class JSelection<T, C extends JComponent, O extends JMyOption<T,
             this.addOption(value);
         }
     }
+    
+    public void rebuildOptions(){
+        this.removeAll();
+        this.buildOptions();
+    }
 
     /**
      * @param value value to build and add to selection
@@ -58,6 +63,13 @@ abstract public class JSelection<T, C extends JComponent, O extends JMyOption<T,
         option.addMouseListener(FI.onLeftClick(() -> toggle(option)));
         this.options.add(0, option);
         this.add(option, 0);
+    }
+
+    public void removeOption(T value){
+        O option = this.getOption(value);
+        this.options.remove(option);
+        this.remove(option);
+        this.repaint();
     }
 
     /**
@@ -154,5 +166,22 @@ abstract public class JSelection<T, C extends JComponent, O extends JMyOption<T,
             removing.accept(t);
             return true;
         };
+    }
+
+    /**
+     * @param removing lambda that is called when option is unselected.
+    */
+    public void onRemoveAll(Runnable removing){
+        this.onRemoveAll = () -> {
+            removing.run();
+            return true;
+        };
+    }
+
+    /**
+     * @param removing lambda that is called when option is unselected.
+    */
+    public void onTryRemoveAll(Supplier<Boolean> removing){
+        this.onRemoveAll = removing;
     }
 }

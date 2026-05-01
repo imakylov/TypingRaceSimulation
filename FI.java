@@ -1,3 +1,6 @@
+
+import java.util.function.Predicate;
+
 /**
  * A class that holds useful functional interfaces
  *
@@ -14,4 +17,6 @@ public class FI {
     public static interface SafeRunnable {
         void run() throws RulesException;
     }
+
+    public static <T> Predicate<T> True(){return t -> true;}
 }

@@ -2,6 +2,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import javax.swing.*;
 
 /**
@@ -11,16 +12,18 @@ import javax.swing.*;
  * @author Adil Akylov
  * @version 1.2
  */
-abstract public class JSelection<T, C extends JComponent> extends JPanel {
-    private final ArrayList<JMyOption<T, C>> options = new ArrayList<>();
-    protected Predicate<T> onAdd = FI.True();
-    protected Predicate<T> onRemove = FI.True();
+abstract public class JSelection<T, C extends JComponent, O extends JMyOption<T, C>> extends JPanel {
+    protected final ArrayList<O> options = new ArrayList<>();
+    protected ArrayList<T> values;
+    protected Predicate<T> onAdd = t -> true;
+    protected Predicate<T> onRemove = t -> true;
+    protected Supplier<Boolean> onRemoveAll = () -> true;
 
     /**
      * @param value value associated with option to build
      * @return Option with given value
      */
-    abstract JMyOption<T, C> buildOption(T value);
+    abstract protected O buildOption(T value);
 
     /**
      * Constructor for objects of class JSelection.
@@ -28,49 +31,57 @@ abstract public class JSelection<T, C extends JComponent> extends JPanel {
      *
      * @param optionsValues values which will be available to choose from
      */
-    public JSelection(ArrayList<T> optionsValues){
+    public JSelection(ArrayList<T> values){
         super();
         this.setLayout(new GridLayout(0, 1, 0, 10));
-        this.buildOptions(optionsValues);
+        this.values = values;
+        this.buildOptions();
     }
 
     /**
-     * @param optionsValues values to add as options to JSelection
+     * @param values values to add as options to JSelection
      */
-    private void buildOptions(ArrayList<T> optionsValues){
-        for(T optionValue : optionsValues){
-            JMyOption<T, C> option = this.buildOption(optionValue);
-            option.addMouseListener(FI.onLeftClick(() -> toggle(option)));
-            this.options.add(option);
-            this.add(option);
+    private void buildOptions(){
+        for(T value : this.values){
+            this.addOption(value);
         }
+    }
+
+    /**
+     * @param value value to build and add to selection
+     */
+    public void addOption(T value){
+        O option = this.buildOption(value);
+        option.addMouseListener(FI.onLeftClick(() -> toggle(option)));
+        this.options.add(0, option);
+        this.add(option, 0);
     }
 
     /**
      * Gets JMyOption object from the options based on value. if not found null
      * 
-     * @param optionValue value to find amoung options
+     * @param value value to find amoung options
      * @return JMyOption corresponding to value
      */
-    private JMyOption<T, C> getOption(T optionValue){
-        for(JMyOption<T, C> option : this.options){
-            if(option.getValue().equals(optionValue)){
+    private O getOption(T value){
+        for(O option : this.options){
+            if(option.getValue().equals(value)){
                 return option;
             }
         }return null;
     }
 
     /**
-     * @param optionValue value whose option to toggle
+     * @param value value whose option to toggle
      */
-    public void toggle(T optionValue){
-        this.toggle(this.getOption(optionValue));
+    public void toggle(T value){
+        this.toggle(this.getOption(value));
     }
 
     /**
      * @param option option that needs to be toggled
      */
-    private void toggle(JMyOption<T, C> option){
+    private void toggle(O option){
         if(option.isSelected()){
             this.unselect(option);
         }else this.select(option);
@@ -81,7 +92,7 @@ abstract public class JSelection<T, C extends JComponent> extends JPanel {
      *
      * @param option to select
      */
-    protected void select(JMyOption<T, C> option){
+    protected void select(O option){
         if(!this.onAdd.test(option.getValue())) return;
         option.select();
     }
@@ -91,7 +102,7 @@ abstract public class JSelection<T, C extends JComponent> extends JPanel {
      *
      * @param option to unselect
      */
-    protected void unselect(JMyOption<T, C> option){
+    protected void unselect(O option){
         if(!this.onRemove.test(option.getValue())) return;
         option.unselect();
     }
@@ -100,7 +111,7 @@ abstract public class JSelection<T, C extends JComponent> extends JPanel {
      * unselects all options with calling onRemove on all of them
      */
     public void unselectAll(){
-        for(JMyOption<T, C> option : this.options){
+        for(O option : this.options){
             if(option.isSelected()) this.unselect(option);
         }
     }

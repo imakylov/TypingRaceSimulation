@@ -8,7 +8,7 @@ import java.util.ArrayList;
  * @author Adil Akylov
  * @version 1.2
  */
-public class JTypistSelection extends JSelection<SwingTypist, JTypistInfo> {
+public class JTypistSelection extends JSelection<SwingTypist, JTypistInfo, JTypistOption> {
     /**
      * @return default list of SwingTypists
     */

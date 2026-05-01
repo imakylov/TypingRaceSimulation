@@ -11,7 +11,7 @@ import javax.swing.JTextArea;
  * @author Adil Akylov
  * @version 1.2
  */
-public class JPassageSelection extends JSingleSelection<String, JScrollPane> {
+public class JPassageSelection extends JSingleSelection<String, JScrollPane, JPassageOption> {
     /**
      * @return default list of SwingTypists
     */

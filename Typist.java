@@ -19,10 +19,10 @@ public class Typist
     private int burnOutTurnsLeft;
 
     // Accuracy thresholds and penalties for mistype and burnout events
-    protected double getMistypeBaseChance(){return .3;}
-    protected double getBurnoutCapChance(){return .05;}
-    protected int getSlideBackAmount(){return 2;}
-    protected int getBurnoutDuration(){return 3;}
+    public double getMistypeBaseChance(){return .3;}
+    public double getBurnoutCapChance(){return .05;}
+    public int getSlideBackAmount(){return 2;}
+    public int getBurnoutDuration(){return 3;}
 
     /**
      * Constructor for objects of class Typist.
@@ -157,48 +157,6 @@ public class Typist
         this.isBurntOut = false;
         this.burnOutTurnsLeft = 0;
         this.specialPostfix = "";
-    }
-
-    /**
-     * Simulates one turn.
-     *
-     * If the typist is burnt out, they recover one turn's worth and skip typing.
-     * Otherwise:
-     *   - They may type a character (advancing progress) based on their accuracy.
-     *   - They may mistype (sliding back) — the chance of a mistype should decrease
-     *     for more accurate typists.
-     *   - They may burn out — more likely for very high-accuracy typists
-     *     who are pushing themselves too hard.
-     *
-     * state of the typist is symbolically stored in postfix and cleared if typist typed correctly.
-     *
-     * @param typist the typist to advance
-     */
-    public void advance() throws RulesException{
-        if (this.isBurntOut()){
-            // Recovering from burnout — skip this turn
-            this.recoverFromBurnout();
-            return;
-        }
-        
-        this.setPostfix("");
-        // Attempt to type a character
-        if (Math.random() < this.getAccuracy()){
-            this.typeCharacter();
-        }
-
-        // Mistype check
-        if (Math.random() < (1 - this.getAccuracy()) * this.getMistypeBaseChance()){
-            this.slideBack(this.getSlideBackAmount());
-            this.setPostfix("[<]");
-        }
-
-        // Burnout check — pushing too hard increases burnout risk
-        // (probability scales with accuracy squared, capped at ~0.05)
-        if (Math.random() < this.getBurnoutCapChance() * this.getAccuracy() * this.getAccuracy()){
-            this.burnOut(this.getBurnoutDuration());
-            this.setPostfix("~");
-        }
     }
 
     /**

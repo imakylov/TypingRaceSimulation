@@ -16,7 +16,13 @@ public class TypingRace<T extends Typist>
     
     public int getMaxTypists(){return 3;}
     public int getStepDurationMS(){return 200;}
-    public int getMinsToFinishRace(){return 2;}
+    public int getMinsToFinishRace(){return 3;}
+
+    public double getBurnoutChanceModifier(){return 1;}
+    public int getBurnoutDurationModifier(){return 0;}
+    public double getMistypeChanceModifier(){return 1;}
+    public int getSlideBackAmountModifier(){return 0;}
+    public double getAccuracyModifier(){return 1;}
 
     /**
      * Constructor for objects of class TypingRace.
@@ -108,7 +114,7 @@ public class TypingRace<T extends Typist>
         while (!finished){
             // Advance each typist by one turn
             for (T typist : this.typists) {
-                typist.advance();
+                this.advance(typist);
             }
 
             // Print the current state of the race
@@ -170,6 +176,50 @@ public class TypingRace<T extends Typist>
         }
         message += seconds + " seconds.";
         return message;
+    }
+
+    /**
+     * Simulates one turn.
+     *
+     * If the typist is burnt out, they recover one turn's worth and skip typing.
+     * Otherwise:
+     *   - They may type a character (advancing progress) based on their accuracy.
+     *   - They may mistype (sliding back) — the chance of a mistype should decrease
+     *     for more accurate typists.
+     *   - They may burn out — more likely for very high-accuracy typists
+     *     who are pushing themselves too hard.
+     *
+     * state of the typist is symbolically stored in postfix and cleared if typist typed correctly.
+     *
+     * @param typist the typist to advance
+     */
+    public void advance(Typist typist) throws RulesException{
+        if (typist.isBurntOut()){
+            // Recovering from burnout — skip this turn
+            typist.recoverFromBurnout();
+            return;
+        }
+        typist.setPostfix("");
+
+        double accuracy = typist.getAccuracy() * this.getAccuracyModifier();
+
+        // Attempt to type a character
+        if (Math.random() < accuracy){
+            typist.typeCharacter();
+        }
+
+        // Mistype check
+        if (Math.random() < (1 - accuracy) * this.getMistypeChanceModifier() * typist.getMistypeBaseChance()){
+            typist.slideBack(this.getSlideBackAmountModifier() + typist.getSlideBackAmount());
+            typist.setPostfix("[<]");
+        }
+
+        // Burnout check — pushing too hard increases burnout risk
+        // (probability scales with accuracy squared, capped at ~0.05)
+        if (Math.random() < this.getBurnoutChanceModifier() * typist.getBurnoutCapChance() * accuracy * accuracy){
+            typist.burnOut(typist.getBurnoutDuration() + this.getBurnoutDurationModifier());
+            typist.setPostfix("~");
+        }
     }
 
     /**

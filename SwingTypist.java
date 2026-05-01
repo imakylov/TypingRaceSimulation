@@ -86,9 +86,16 @@ public class SwingTypist extends Typist {
     }
 
     @Override
+    public void burnOut(int turns) throws RulesException{
+        super.burnOut(turns);
+        this.burnoutCount++;
+    }
+
+        @Override
     public void slideBack(int amount) throws RulesException{
         super.slideBack(amount);
         this.mistypes++;
+        this.globalMistypes++;
     }
 
     public int getWPM(){

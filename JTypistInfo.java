@@ -43,6 +43,6 @@ public class JTypistInfo extends JPanel {
         this.accuracy.setText("Accuracy: " + (int)(100*this.typist.getAccuracy()) + "%");
         this.WPM.setText("Global WPM: " + this.typist.getWPM());
         this.bestWPM.setText("best WPM: " + this.typist.getBestWPM());
-        this.mistypePercentage.setText("Mistypes percentage: " + this.typist.getGlobalMistypePercentage());
+        this.mistypePercentage.setText("Mistype percentage: " + (int) this.typist.getGlobalMistypePercentage() + "%");
     }
 }

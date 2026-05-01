@@ -96,7 +96,7 @@ class JTypistOption extends JMyOption<SwingTypist, JTypistInfo>{
      * @param typist typist which will be associated with this option
      */
     private JTypistOption(SwingTypist typist){
-        super(typist, 150);
+        super(typist, 170);
     }
 
     public static JTypistOption makeOption(SwingTypist typist){

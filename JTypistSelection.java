@@ -9,21 +9,7 @@ import java.util.ArrayList;
  * @version 1.2
  */
 public class JTypistSelection extends JSelection<SwingTypist, JTypistInfo, JTypistOption> {
-    /**
-     * @return default list of SwingTypists
-    */
-    public static ArrayList<SwingTypist> defaultRotation(){
-        ArrayList<SwingTypist> typists = new ArrayList<>();
-        typists.add(new SwingTypist("TURBOFINGERS", 0.85, Color.RED));
-        typists.add(new SwingTypist("QWERTY_QUEEN",  0.60, Color.ORANGE));
-        typists.add(new SwingTypist("HUNT_N_PECK",   0.30, Color.YELLOW));
-        typists.add(new SwingTypist("Ivan",   0.50, Color.GREEN));
-        typists.add(new SwingTypist("Alex",   0.51, Color.BLUE));
-        typists.add(new SwingTypist("Monawar",   0.61, new Color(250, 0, 250)));
-        typists.add(new SwingTypist("Oliver",   0.70, Color.PINK));
-        return typists;
-    }
-
+    private static final ArrayList<JTypistSelection> globalSelections = new ArrayList<>();
     /**
      * @param typist typist associated with option to build
      * @return Option with given typist

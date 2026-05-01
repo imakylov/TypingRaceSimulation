@@ -11,6 +11,8 @@ import java.util.function.Supplier;
  */
 public class SwingTypist extends Typist {
     private Color color;
+    private int charactersTyped = 0;
+    private int MS_played = 0;
     private static ArrayList<SwingTypist> allTypists = null;
 
     /**
@@ -60,6 +62,23 @@ public class SwingTypist extends Typist {
     public static SwingTypist makeRandom(){
         String randomName = "Sample Typist #" + (int)(Math.random()*10);
         return SwingTypist.make(randomName, Math.random(), Utils.randomColor());
+    }
+
+    @Override
+    public void finishRace(int passageLength, int MS_since_race_start){
+        this.charactersTyped += this.getProgress();
+        this.MS_played += MS_since_race_start;
+        if(passageLength <= this.getProgress()){
+            JTypistSelection.updateAll();
+        }
+    }
+
+    public int getWPM(){
+        if(this.MS_played == 0)return 0;
+        double wordsProgress = this.charactersTyped / Constants.CHARACTERS_IN_WORD;
+        double minutesPassed = this.MS_played / 1000.0 / 60.0;
+        double wpm = wordsProgress / minutesPassed;
+        return (int) wpm;
     }
 
     /**

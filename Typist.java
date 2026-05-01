@@ -68,6 +68,8 @@ public class Typist
         this.setAccuracy(.8*this.typistAccuracy+.2);
     }
 
+    public void finishRace(int passageLength, int MS_since_race_start){}
+
     /**
      * Reduces the remaining burnout counter by one turn.
      * When the counter reaches zero, the typist recovers automatically.

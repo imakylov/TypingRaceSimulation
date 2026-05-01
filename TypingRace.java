@@ -133,6 +133,9 @@ public class TypingRace<T extends Typist>
                 throw new RulesException("Race interrupted!", false);
             }
         }
+        for(Typist typist : this.typists){
+            typist.finishRace(this.getPassageLength(), this.steps_since_start * this.getStepDurationMS());
+        }
         this.handleWinningTypists();
         this.printSystemMessage("The race went on for " + this.timeSinceStart());
     }

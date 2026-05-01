@@ -102,7 +102,7 @@ public class SwingTypingRace extends TypingRace<SwingTypist> {
         SwingUtilities.invokeLater(() -> {
             if(!this.finilised)return;
             for(JTypistLane lane : this.lanes){
-                lane.update();
+                lane.update(super.calculateWPM(lane.typist));
             }
         });
     }

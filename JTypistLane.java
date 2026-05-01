@@ -11,12 +11,13 @@ import javax.swing.text.*;
  * @version 1.2
  */
 public class JTypistLane extends JPanel{
-    private final SwingTypist typist;
+    public final SwingTypist typist;
     private JTextPane track;
     private Style writtenStyle;
     private Style unwrittenStyle;
     private int lastProgress;
     private JTypistInfo info;
+    private JLabel WPM;
 
     /**
      * Constructor for objects of class JTypistLane.
@@ -40,6 +41,9 @@ public class JTypistLane extends JPanel{
         this.info = new JTypistInfo(this.typist);
         this.add(this.info);
         this.add(this.buildTrack(passage));
+        this.WPM = new JLabel();
+        Utils.setStableSize(this.WPM, 100, 30);
+        this.add(this.WPM);
         return this;
     }
 
@@ -64,9 +68,10 @@ public class JTypistLane extends JPanel{
     /**
      * updates all info about the typist and their progress
      */
-    public void update(){
+    public void update(int wpm){
         this.info.update();
         this.updateTrackProgress();
+        this.WPM.setText("Current WPM: " + wpm);
     }
 
     /**

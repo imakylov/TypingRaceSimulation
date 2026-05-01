@@ -10,9 +10,10 @@ import javax.swing.JPanel;
  * @version 1.2
  */
 public class JTypistInfo extends JPanel {
+    private final SwingTypist typist;
     private final JLabel name;
     private final JLabel accuracy;
-    private final SwingTypist typist;
+    private final JLabel WPM;
 
     /**
      * Constructor for objects of class JTypistInfo.
@@ -26,8 +27,10 @@ public class JTypistInfo extends JPanel {
         this.typist = typist;
         this.name = new JLabel();
         this.accuracy = new JLabel();
+        this.WPM = new JLabel();
         this.add(this.name);
         this.add(this.accuracy);
+        this.add(this.WPM);
     }
 
     /**
@@ -37,5 +40,6 @@ public class JTypistInfo extends JPanel {
         this.name.setText(this.typist.getName());
         this.name.setForeground(this.typist.getColor());
         this.accuracy.setText("Accuracy: " + (int)(100*this.typist.getAccuracy()) + "%");
+        this.WPM.setText("Global WPM: " + this.typist.getWPM());
     }
 }

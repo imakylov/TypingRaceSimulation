@@ -1,12 +1,14 @@
 import java.awt.CardLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 
 /**
@@ -25,6 +27,7 @@ public class SwingMenu extends JPanel{
     static SwingTypingRace race;
 
     private JPanel controlPanel;
+    private JTextArea passageInput;
 
     public SwingMenu(SwingTypingRace race){
         super();
@@ -39,8 +42,8 @@ public class SwingMenu extends JPanel{
     
     private JScrollPane buildTypistSelection(){
         JTypistSelection typistSelection = new JTypistSelection(null);
-        typistSelection.onAdd(FI.toastExceptions(typist -> race.addTypist(typist)));
-        typistSelection.onRemove(FI.toastExceptions(typist -> race.removeTypist(typist)));
+        typistSelection.onTryAdd(FI.toastExceptions(typist -> race.addTypist(typist)));
+        typistSelection.onTryRemove(FI.toastExceptions(typist -> race.removeTypist(typist)));
         JScrollPane scrollPane = new JScrollPane(typistSelection);
         scrollPane.setPreferredSize(new Dimension(200, 250));
         return scrollPane;
@@ -48,11 +51,23 @@ public class SwingMenu extends JPanel{
 
     private JPanel buildPassagePanel(){
         JPanel passagePanel = Utils.getBoxPanel(BoxLayout.Y_AXIS);
+        this.passageInput = new JTextArea();
+        this.passageInput.setFont(new Font("Monospace", 1, 15));
+        this.passageInput.setLineWrap(true);
+        this.passageInput.setWrapStyleWord(true);
+        JScrollPane inputPane = new JScrollPane(passageInput);
+        Utils.setStableSize(inputPane, 500, 70);
+        inputPane.setBorder(BorderFactory.createEmptyBorder(10, 0, 20, 20));
+
+        passagePanel.add(inputPane);
         JPassageSelection passageSelection = new JPassageSelection(null);
-        // passageSelection.
-        // JTextField passageInput = new JTextField("", 60);
-        // passageSelection.onAdd();
-        passagePanel.add(passageSelection);
+        passageSelection.onAdd(p -> this.passageInput.setText(p));
+        passageSelection.onRemove(p -> {
+            if(this.passageInput.getText().equals(p))this.passageInput.setText("");
+        });
+        JScrollPane scrollPane = new JScrollPane(passageSelection);
+        scrollPane.setBorder(null);
+        passagePanel.add(scrollPane);
         return passagePanel;
     }
 
@@ -62,8 +77,15 @@ public class SwingMenu extends JPanel{
         this.controlPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 200));
 
         JButton startButton = new JButton("Start Race");
+        startButton.addActionListener(ev -> {
+            try {
+                race.setPassage(this.passageInput.getText());
+            } catch (RulesException ex) {
+                ToastManager.get().push(ex);
+            }
+            race.prepareForOpen();
+        });
         startButton.addActionListener(e -> cardLayout.show(cardsPanel, "RACE"));
-        startButton.addActionListener(e -> race.prepareForOpen());
         this.controlPanel.add(startButton);
 
         return this.controlPanel;
@@ -94,9 +116,7 @@ public class SwingMenu extends JPanel{
     }
     static JPanel setupRace() throws RulesException{
         JPanel racePanel = new JPanel();
-        String passage = "The last man of Earth sat alone in a room. There was a knock on the door.";
-        // String passage = "In the rigor which is space, this spacesuit was designed by engineers to maintain your life in space, and can be called the smallest spaceship.";
-        race = new SwingTypingRace(passage, racePanel);
+        race = new SwingTypingRace("", racePanel);
         JButton backBtn = menuButton();
         backBtn.addActionListener(e -> race.prepareForClose());
         race.addButton(backBtn);

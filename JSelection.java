@@ -1,5 +1,6 @@
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import javax.swing.*;
 
@@ -108,15 +109,35 @@ abstract public class JSelection<T, C extends JComponent> extends JPanel {
      * @param tryAdding lambda that is called when option is selected.
      * false return is considered as failure, doesn't select
     */
-    public void onAdd(Predicate<T> tryAdding){
+    public void onTryAdd(Predicate<T> tryAdding){
         this.onAdd = tryAdding;
+    }
+
+    /**
+     * @param adding lambda that is called when option is selected.
+    */
+    public void onAdd(Consumer<T> adding){
+        this.onAdd = t -> {
+            adding.accept(t);
+            return true;
+        };
     }
 
     /**
      * @param tryRemoving lambda that is called when option is unselected.
      * false return is considered as failure, doesn't unselect
     */
-    public void onRemove(Predicate<T> tryRemoving){
+    public void onTryRemove(Predicate<T> tryRemoving){
         this.onRemove = tryRemoving;
+    }
+
+    /**
+     * @param removing lambda that is called when option is unselected.
+    */
+    public void onRemove(Consumer<T> removing){
+        this.onRemove = t -> {
+            removing.accept(t);
+            return true;
+        };
     }
 }

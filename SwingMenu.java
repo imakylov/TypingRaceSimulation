@@ -114,7 +114,7 @@ public class SwingMenu extends JPanel{
     static void setupFrame(){
         frame = new JFrame("Typing Race simulation");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(900, 600);
+        frame.setSize(1000, 600);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }

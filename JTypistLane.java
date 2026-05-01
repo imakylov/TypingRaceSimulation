@@ -17,7 +17,9 @@ public class JTypistLane extends JPanel{
     private Style unwrittenStyle;
     private int lastProgress;
     private JTypistInfo info;
-    private JLabel WPM;
+    private JLabel WPM = new JLabel();
+    private JLabel burnoutCount = new JLabel();
+    private JLabel mistypePercentage = new JLabel();
 
     /**
      * Constructor for objects of class JTypistLane.
@@ -41,10 +43,17 @@ public class JTypistLane extends JPanel{
         this.info = new JTypistInfo(this.typist);
         this.add(this.info);
         this.add(this.buildTrack(passage));
-        this.WPM = new JLabel();
-        Utils.setStableSize(this.WPM, 100, 30);
-        this.add(this.WPM);
+        this.add(this.buildStatistics());
         return this;
+    }
+
+    private JPanel buildStatistics(){
+        JPanel statistics = Utils.getBoxPanel(BoxLayout.Y_AXIS);
+        statistics.add(this.WPM);
+        statistics.add(this.burnoutCount);
+        statistics.add(this.mistypePercentage);
+        Utils.setStableSize(statistics, 200, 100);
+        return statistics;
     }
 
     /**
@@ -72,6 +81,9 @@ public class JTypistLane extends JPanel{
         this.info.update();
         this.updateTrackProgress();
         this.WPM.setText("Current WPM: " + wpm);
+        this.burnoutCount.setText("Burned out " + this.typist.getBurnoutCount() + " times");
+        String mistypePercent = String.format("%.2f", this.typist.getMistypePercentage()) + "%";
+        this.mistypePercentage.setText("Current mistype chance: " + mistypePercent);
     }
 
     /**

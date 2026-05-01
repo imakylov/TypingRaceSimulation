@@ -75,7 +75,7 @@ public class JTypistSelection extends JSelection<SwingTypist, JTypistInfo, JTypi
  */
 class JTypistOption extends JMyOption<SwingTypist, JTypistInfo>{
     @Override
-    int getMaxHeight(){return 50;}
+    int getMaxHeight(){return 80;}
 
     /**
      * @param typist to be represented with JTypistInfo
@@ -84,7 +84,7 @@ class JTypistOption extends JMyOption<SwingTypist, JTypistInfo>{
     @Override
     JTypistInfo buildValue(SwingTypist typist, int width) {
         JTypistInfo info = new JTypistInfo(typist);
-        info.setMinimumSize(new Dimension(width, 0));
+        info.setMinimumSize(new Dimension(width, getMaxHeight()));
         info.update();
         return info;
     }
@@ -96,7 +96,7 @@ class JTypistOption extends JMyOption<SwingTypist, JTypistInfo>{
      * @param typist typist which will be associated with this option
      */
     private JTypistOption(SwingTypist typist){
-        super(typist, 100);
+        super(typist, 150);
     }
 
     public static JTypistOption makeOption(SwingTypist typist){

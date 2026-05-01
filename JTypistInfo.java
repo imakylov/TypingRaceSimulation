@@ -11,9 +11,11 @@ import javax.swing.JPanel;
  */
 public class JTypistInfo extends JPanel {
     private final SwingTypist typist;
-    private final JLabel name;
-    private final JLabel accuracy;
-    private final JLabel WPM;
+    private final JLabel name = new JLabel();
+    private final JLabel accuracy = new JLabel();
+    private final JLabel WPM = new JLabel();
+    private final JLabel bestWPM = new JLabel();
+    private final JLabel mistypePercentage = new JLabel();
 
     /**
      * Constructor for objects of class JTypistInfo.
@@ -25,12 +27,11 @@ public class JTypistInfo extends JPanel {
         super();
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         this.typist = typist;
-        this.name = new JLabel();
-        this.accuracy = new JLabel();
-        this.WPM = new JLabel();
         this.add(this.name);
         this.add(this.accuracy);
         this.add(this.WPM);
+        this.add(this.bestWPM);
+        this.add(this.mistypePercentage);
     }
 
     /**
@@ -41,5 +42,7 @@ public class JTypistInfo extends JPanel {
         this.name.setForeground(this.typist.getColor());
         this.accuracy.setText("Accuracy: " + (int)(100*this.typist.getAccuracy()) + "%");
         this.WPM.setText("Global WPM: " + this.typist.getWPM());
+        this.bestWPM.setText("best WPM: " + this.typist.getBestWPM());
+        this.mistypePercentage.setText("Mistypes percentage: " + this.typist.getGlobalMistypePercentage());
     }
 }

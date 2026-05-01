@@ -13,6 +13,10 @@ public class SwingTypist extends Typist {
     private Color color;
     private int charactersTyped = 0;
     private int MS_played = 0;
+    private int bestWPM = 0;
+    private int burnoutCount = 0;
+    private int mistypes = 0;
+    private int globalMistypes = 0;
     private static ArrayList<SwingTypist> allTypists = null;
 
     /**
@@ -65,12 +69,26 @@ public class SwingTypist extends Typist {
     }
 
     @Override
+    public void resetToStart(){
+        super.resetToStart();
+        this.burnoutCount = 0;
+        this.mistypes = 0;
+    }
+
+    @Override
     public void finishRace(int passageLength, int MS_since_race_start){
+        super.finishRace(passageLength, MS_since_race_start);
         this.charactersTyped += this.getProgress();
         this.MS_played += MS_since_race_start;
         if(passageLength <= this.getProgress()){
             JTypistSelection.updateAll();
-        }
+        }this.bestWPM = Math.max(this.bestWPM, this.getWPM());
+    }
+
+    @Override
+    public void slideBack(int amount) throws RulesException{
+        super.slideBack(amount);
+        this.mistypes++;
     }
 
     public int getWPM(){
@@ -79,6 +97,17 @@ public class SwingTypist extends Typist {
         double minutesPassed = this.MS_played / 1000.0 / 60.0;
         double wpm = wordsProgress / minutesPassed;
         return (int) wpm;
+    }
+
+    public int getBestWPM(){return this.bestWPM;}
+    public int getBurnoutCount(){return this.burnoutCount;}
+    public double getMistypePercentage(){
+        int charactersTried = this.mistypes + this.getProgress() + this.mistypes * this.getSlideBackAmount();
+        return charactersTried == 0 ? 0 : 100 * this.mistypes / charactersTried;
+    }
+    public double getGlobalMistypePercentage(){
+        int charactersTried = this.globalMistypes + this.charactersTyped + this.globalMistypes * this.getSlideBackAmount();
+        return charactersTried == 0 ? 0 : 100 * this.globalMistypes / charactersTried;
     }
 
     /**

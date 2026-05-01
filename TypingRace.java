@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
 public class TypingRace<T extends Typist>
 {
     private final int passageLength;
-    private int steps_since_start;
+    protected int steps_since_start;
     protected ArrayList<T> typists;
     
     public int getMaxTypists(){return 3;}
@@ -19,9 +19,9 @@ public class TypingRace<T extends Typist>
     public int getMinsToFinishRace(){return 3;}
 
     public double getBurnoutChanceModifier(){return 1;}
-    public int getBurnoutDurationModifier(){return 0;}
+    public double getBurnoutDurationModifier(){return 1;}
     public double getMistypeChanceModifier(){return 1;}
-    public int getSlideBackAmountModifier(){return 0;}
+    public double getSlideBackAmountModifier(){return 1;}
     public double getAccuracyModifier(){return 1;}
 
     /**
@@ -210,14 +210,14 @@ public class TypingRace<T extends Typist>
 
         // Mistype check
         if (Math.random() < (1 - accuracy) * this.getMistypeChanceModifier() * typist.getMistypeBaseChance()){
-            typist.slideBack(this.getSlideBackAmountModifier() + typist.getSlideBackAmount());
+            typist.slideBack((int)(this.getSlideBackAmountModifier() * typist.getSlideBackAmount()));
             typist.setPostfix("[<]");
         }
 
         // Burnout check — pushing too hard increases burnout risk
         // (probability scales with accuracy squared, capped at ~0.05)
         if (Math.random() < this.getBurnoutChanceModifier() * typist.getBurnoutCapChance() * accuracy * accuracy){
-            typist.burnOut(typist.getBurnoutDuration() + this.getBurnoutDurationModifier());
+            typist.burnOut((int)(typist.getBurnoutDuration() * this.getBurnoutDurationModifier()));
             typist.setPostfix("~");
         }
     }

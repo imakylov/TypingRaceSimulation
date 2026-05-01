@@ -19,6 +19,48 @@ public class SwingTypingRace extends TypingRace<SwingTypist> {
 
     @Override
     public int getMaxTypists(){return 6;}
+    @Override
+    public int getStepDurationMS(){
+        int duration = super.getStepDurationMS();
+        if(this.isCaffeine && this.steps_since_start <= 20){
+            duration /= 3;
+        }return duration;
+    }
+
+    private boolean isAutocorrect = false;
+    private boolean isCaffeine = false;
+    private boolean isNight = false;
+
+    @Override
+    public double getBurnoutChanceModifier(){
+        return super.getBurnoutChanceModifier() * (this.isCaffeine ? 1.5 : 1);
+    }
+    @Override
+    public double getBurnoutDurationModifier(){
+        return super.getBurnoutDurationModifier() * (this.isCaffeine ? 2 : 1);
+    }
+    @Override
+    public double getMistypeChanceModifier(){
+        return super.getMistypeChanceModifier();
+    }
+    @Override
+    public double getSlideBackAmountModifier(){
+        return super.getSlideBackAmountModifier() * (this.isAutocorrect ? .5 : 1);
+    }
+    @Override
+    public double getAccuracyModifier(){
+        return super.getAccuracyModifier() * (this.isNight ? .8 : 1);
+    }
+
+    public void setIsAutocorrect(boolean value){
+        this.isAutocorrect = value;
+    }
+    public void setIsCaffeine(boolean value){
+        this.isCaffeine = value;
+    }
+    public void setIsNight(boolean value){
+        this.isNight = value;
+    }
 
     /**
      * constructor of class SwingTypingRace. prepares the fields and automatically builds the race layout.
